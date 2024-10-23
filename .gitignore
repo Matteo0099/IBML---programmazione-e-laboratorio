@@ -1,14 +1,1 @@
-# dependencies
-*node_modules
-/node_modules
-
-#logs
-*logs
-test
-*log
-
 *.bak
-*bak
-*#.bak
-*/bak
-*#filename.bak
