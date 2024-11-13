@@ -1,15 +1,13 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname |esercizio 1|) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
-(define sog-art
-  (lambda (sog)
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname es_1_laboratorio_vers_1) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+(define (sog-art sog)    ; bu, senza lambda
     (cond
      ((sog-o sog)(string-append "il " sog))
       ((sog-i sog)(string-append "i " sog))
        ((sog-a sog)(string-append "la " sog))
-      ((sog-e sog)(string-append "le " sog))
-       )
-  )
+      ((sog-e sog)(string-append "le " sog))   
+      )
   )
 
 (define sog-o
