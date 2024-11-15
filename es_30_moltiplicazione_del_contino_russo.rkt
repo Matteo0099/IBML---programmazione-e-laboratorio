@@ -12,3 +12,22 @@
            (+ m (molt-russa (* 2 m) (quotient n 2)))) ; 2m * (n-1)/2 = m*(n-1) = m*n-m
      )
   ))
+
+
+; versione più precisa:
+; funzione delega
+(define molt-cont     ; intero
+  (lambda (m n)       ; m, n: interi positivi
+    (molt-rec m n 0)
+    ))
+
+(define molt-rec    ; intero
+  (lambda (m n p)   ; m, n, p: interi positivi
+    (cond ((= n 0)
+           p)
+          ((even? n)
+           (molt-rec (* 2 m) (quotient n 2) p))  ; 2m * n/2 = m*n
+          (else
+           (+ m (molt-rec (* 2 m) (quotient n 2) (+ m p)))) ; 2m * (n-1)/2 = m*(n-1) = m*n-m
+      )
+    ))
