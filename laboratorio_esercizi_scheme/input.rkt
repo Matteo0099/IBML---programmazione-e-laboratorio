@@ -1,0 +1,60 @@
+
+(diff
+
+ (list  ; lcs_v1
+  ""
+  ";; Longest Common Subsequence (LCS)"
+  ";; Algoritmo ricorsivo"
+  ""
+  "(define lcs      ; val:  stringa"
+  "  (lambda (u v)  ; u, v: stringhe"
+  "    (cond ((or (= (string-length u) 0) (= (string-length v) 0))"
+  "           (string ))  ; stringa vuota"
+  "          ((char=? (string-ref u 0) (string-ref v 0))"
+  "           (string-append"
+  "            (string (string-ref u 0)) (lcs (substring u 1) (substring v 1))))"
+  "          (else"
+  "           (longer (lcs (substring u 1) v) (lcs u (substring v 1))))"
+  "          )))"
+  ""
+  "(define longer   ; val:  stringa"
+  "  (lambda (u v)  ; u, v: stringhe"
+  "    (let ((m (string-length u)) (n (string-length v)))"
+  "      (if (< m n)"
+  "          v"
+  "          u))"
+  "    ))"
+  ""
+  )     ; lcs_v1
+
+ (list  ; lcs_v2
+  ""
+  ";; Longest Common Subsequence (LCS)"
+  ";; Algoritmo ricorsivo"
+  ""
+  "(define lcs      ; val:  stringa"
+  "  (lambda (u v)  ; u, v: stringhe"
+  "    (cond ((or (= (string-length u) 0) (= (string-length v) 0))"
+  "           (string ))  ; stringa vuota"
+  "          ((char=? (string-ref u 0) (string-ref v 0))"
+  "           (string-append"
+  "            (substring u 0 1) (lcs (substring u 1) (substring v 1))))"
+  "          (else"
+  "           (longer (lcs (substring u 1) v) (lcs u (substring v 1))))"
+  "          )))"
+  ""
+  ";;  Stringa piu' lunga"
+  ""
+  "(define longer   ; val:  stringa"
+  "  (lambda (u v)  ; u, v: stringhe"
+  "    (let ((m (string-length u)) (n (string-length v)))"
+  "      (cond ((< m n) v)"
+  "            ((> m n) u)"
+  "            ((= (random 2) 0) v)"
+  "            (else u)))"
+  "    ))"
+  ""
+  )     ; lcs_v1
+
+ )  ; diff
+
