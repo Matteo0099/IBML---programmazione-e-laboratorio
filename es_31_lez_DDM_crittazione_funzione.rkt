@@ -17,7 +17,7 @@
           (integer->char (- new-ascii n-car))
           )
       )
-   ))
+    ))
 
 ; programma 2: registro ascii + 1
 (define rgl-augusto
@@ -63,15 +63,79 @@
     (if (string=? msg "")
         ""
         (string-append
-         (string (rgl (string-ref msg 0)))
+         ((string (rgl (string-ref msg 0)))
          (crittazione (substring msg 1) rgl)
          )
         )
     ))
+  )
 
 ; programma 6: rot->funz.codifica di caratteri
 (define cifrario   ; funzione/procedura [char->char]
   (lambda (rot)    ; rot: intero positivo
     (lambda (crt)     ; oggetto: tipo funzione, restituito; crt: char.
+      (let (
+            (new-ascii (+ rot (char->integer crt)))
+            )
+        (if (<= new-ascii aZ)
+            (integer->char new-ascii)
+            (integer->char (- new-ascii n-car))
+            )
+        )
       )
     ))
+
+; decifratura (algoritmo inverso)
+(define genera-rgl-inversa  ; val: char->char
+  (lambda (rgl)             ; rgl: char->char
+    (lambda (c)
+      (let (
+            (rot (-(char->integer(rgl #\A)) aA))   ; diff: 26-cost.rot.
+            )
+        ((cifrario (- n-car rot)) c)                ; restituisce la regola di rotazione
+        )
+      )
+    ))
+
+(define rgl-cesare-decr
+  (genera-rgl-inversa rgl-cesare)
+  )
+
+; decifratura (algoritmo inverso)
+(define genera-rgl-inversa-alt  ; val: char->char
+  (lambda (rgl)             ; rgl: char->char
+    (lambda (c)
+      (let (
+            (rot (-(char->integer(rgl #\A)) aA))   ; diff: 26-cost.rot.
+            )
+        ((cifrario (- n-car rot)) c)                ; restituisce la regola di rotazione
+        )
+      )
+    ))
+
+(define rgl-cesare-decr-alt
+  (genera-rgl-inversa-alt rgl-cesare)
+  )
+
+
+; generatore di regole inverse generalizzato
+
+(define genera-rgl-inversa-generalizzata  ; val: funzione [char -> char]
+  (lambda (rgl)                           ; rgl: funzione [char -> char] -- rgl: permutazione qualsiasi
+    (lambda (c)                           ; c: char, val: char.
+      (ricerca rgl c #\A)                 ; la ricerca deve restituirmi il carattere per cui la regola mi dà char[0].
+      )
+  ))
+
+(define ricerca                       ; val di ritorno: char.
+  (lambda (rgl c-find c-cand)         ; regola, char1, char2.
+    (if (char=? c-find (rgl c-cand)) ; caso base (nel caso in cui c'è già)
+         c-cand
+         (ricerca rgl c-find (next-c c-cand))
+     )
+  ))
+
+(define next-c
+  (lambda (c)
+    (integer->char (+ 1 (char->integer c)))
+  ))
