@@ -14,8 +14,26 @@
 (define position
   (lambda (x s)
     (cond
-      ((null? s) false)    ; caso 1: lista vuota
-      ((= x (car s)) 0)    ; caso 2: x è il primo elemento
-      
+      ((null? s) false)
+      ((= x (car s)) 0)
+      (else (+ 1 (position x (cdr s))))
+     )
+  ))
+
+(define sorted-ins
+  (lambda (x s)
+    (cond
+      ((null? s) (list x))
+      ((= x (car s)) s)
+      ((< x (car s)) (cons x s))
+      (else (cons (car s) (sorted-ins x (cdr s))))
+     )
+  ))
+
+(define sorted-list
+  (lambda (s)
+    (cond
+      ((null? s) '())
+      (else (sorted-ins (car s) (sorted-list (cdr s))))
      )
   ))
