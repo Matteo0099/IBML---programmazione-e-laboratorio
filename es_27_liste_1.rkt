@@ -12,7 +12,13 @@
 
 
 ; length
-;esercizio da fare
+(define lunghezza
+  (lambda (s)       ; s è la lista
+    (if (null? s)   ; caso base: lista vuota
+        0           ; la lunghezza di una lista vuota è 0
+        (+ 1 (lunghezza (cdr s))) ; caso ricorsivo
+     )
+  ))
 
 
 ;append
