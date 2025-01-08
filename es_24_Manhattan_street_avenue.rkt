@@ -41,3 +41,45 @@
 
 ;; input ;;
 ;; (paths 1 5 2) ----> (list "011111" "101111" "110111" "111011" "111101" "111110")
+
+
+;; es del prof.
+(define manh     ; val: intero
+  (lambda (i j)   ; i,j: interi positivi
+     (if (or (= i 0) (= j 0))
+          1
+          (+ (manh (- i 1) j) (manh i (- j 1)))  ; i=-(orizzontale), j=|(verticale)
+          )
+     ))
+
+; Ogni i,j naturali . (manh i j) -*-> (i+j)! / (i! * j!)
+
+; Dimostrazione per induzione su k = i+j
+
+; (0, 0) < (0, 1) , (1, 0) < (0, 2) , (1, 1), (2, 0) < (0, 3), (1, 2), (2, 1), (3, 0) < ...
+; (G): Ogni k naturale . Ogni i,j naturali t.c. i+j=k . vale (manh i j) -*-> (i+j)! / (i! * j!)
+
+; Caso/i base:
+; Per k=0 . Ogni i,j naturali t.c. i+j=0 . (manh i j) -*-> (i+j)! / (i! * j!)
+; (manh 0 0) -*-> (0+0)! / (0! * 0!) = 1
+
+; Ipotesi induttiva: considero un particolare k naturale e assumo
+; Ogni i,j naturali t.c. i+j = k . (manh i j) -*-> (i+j)! / (i! * j!)
+
+; Passo induttivo: vorrei dimostrare che
+; Ogni i,j naturali t.c. i+j = k+1 . (manh i j) -*-> (i+j)! / (i * j!)
+
+; Dimostrazione del passo induttivo: Ogni i,j naturali t.c. i+j = k+1
+; (manh i j) --> (if (or (= i 0) (= j 0)) ... ...)
+; (a) i = 0, (b) j = 0
+; (manh i j) --> (if (or (= i 0) (= j 0)) ... ...) --> 1=? --> (0+j)! / (0! * j!) = (i+0)! / (i! * 0!) = 1 (verificato)
+; (c) i,j > 0
+; (manh i j) --> (if (or (= i 0) (= j 0)) ... ...) --> (+ (manh (- i 1) j) (manh (i (- j 1)))
+;  ---> (+ (manh i-1 j) (manh i (- j 1)))    ; i-1 + j = i+1 - 1 = k+1 - 1 = k
+;  ---> (+ (i-1 + j)! / ((i-1)! * j!) (manh i j-1))    ; si applica l'ipotesi induttiva
+;  ---> (+ (i-1+j)! / ((i-1)! * j!) (manh i j-1))   ; come sopra
+;  ---> (+ (i-1+j)! / ((i-1)! * j!) (i+j-1)! / (i! * (j-1)!))
+;  ---> (i-1+j)! / ((i-1)! * j!) + (i+j-1)! / (i! * (j-1)!)
+;  ---> .... finire i conti, deve tornare (i+j)! / (i! * j!).
+
+; fine.
