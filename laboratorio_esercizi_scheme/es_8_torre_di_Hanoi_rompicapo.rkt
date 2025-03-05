@@ -38,8 +38,8 @@
              )
             ;; k è la mossa centrale
             ((= k half-moves)
-             '((1 n) (2 0) (3 0)))
-
+             '((1 n) (2 0) (3 0))
+             )
             ;; k è nella seconda metà delle mosse
             ((> k half-moves)
              (let ((result (hanoi-disks (- n 1) (- k half-moves))))  ; Chiamata ricorsiva per la seconda metà
