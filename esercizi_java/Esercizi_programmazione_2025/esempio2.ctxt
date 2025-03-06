@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=esempio2
+comment0.text=\r\n\ Esempio2\:\ plurali\ maschili/femminili\r\n
+comment1.params=sm
+comment1.target=java.lang.String\ pluraleSm(java.lang.String)
+comment2.params=s
+comment2.target=java.lang.String\ radiceSost(java.lang.String)
+numComments=3
