@@ -1,0 +1,18 @@
+#BlueJ class context
+comment0.target=tutto
+comment0.text=\r\n\ Corso\ programmazione\ parte\ 2\ -\ java\r\n\ Programmazione\ imperativa\r\n
+comment1.params=x\ y
+comment1.target=int\ mcd(int,\ int)
+comment2.params=x\ y
+comment2.target=int\ mcm(int,\ int)
+comment3.params=n
+comment3.target=boolean\ primo(int)
+comment4.params=max
+comment4.target=void\ listaPrimi(int)
+comment5.params=btr
+comment5.target=int\ btrVal(java.lang.String)
+comment6.params=btd
+comment6.target=int\ btdVal(java.lang.String)
+comment7.params=n
+comment7.target=int\ ufo(int)
+numComments=8
