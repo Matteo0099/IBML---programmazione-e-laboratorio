@@ -15,4 +15,9 @@ comment6.params=btd
 comment6.target=int\ btdVal(java.lang.String)
 comment7.params=n
 comment7.target=int\ ufo(int)
-numComments=8
+comment8.params=n
+comment8.target=int\ ufoTopDown(int)
+comment8.text=\r\n\ n\ \=\ 13\r\n\ |12|\ /2\ |6|\ /2\ |3|\ /2\ |1|\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3\r\n\ \ \ \ \ \ \ \ \ \ 5\r\n\ \ 9\r\n\r\n\ \ k\:\r\n\ \ y\ \=\ (1,3)\ 5\r\n\ \ T[]\ a\ \=\ T[\ dim\ ];\ \ //\ creazione\ di\ un\ array\r\n\ \ a[i]\ \=\ ...\ \ \ \ \ \ \ \ \ //\ accesso\ in\ scrittura\r\n\ \ ...\ \=\ ...\ a[i]\ ...\ //\ accesso\ in\ lettura\r\n\ \ if/while\ (...\ a[i]\ ...)\r\n
+comment9.params=n
+comment9.target=void\ eratostene(int)
+numComments=10
