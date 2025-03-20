@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=IntSList
+comment0.text=\r\n\ Aggiungi\ qui\ una\ descrizione\ della\ classe\ IntSList\r\n\ \r\n\ @author\ (il\ tuo\ nome)\ \r\n\ @version\ (un\ numero\ di\ versione\ o\ una\ data)\r\n
+comment1.params=
+comment1.target=IntSList()
+comment1.text=\r\n\ Costruttore\ degli\ oggetti\ di\ classe\ \ IntSList\r\n
+comment2.params=y
+comment2.target=int\ sampleMethod(int)
+comment2.text=\r\n\ Un\ esempio\ di\ metodo\ -\ aggiungi\ i\ tuoi\ commenti\r\n\ \r\n\ @param\ \ y\ \ \ un\ parametro\ d'esempio\ per\ un\ metodo\r\n\ @return\ \ \ \ \ la\ somma\ di\ x\ e\ y\r\n
+numComments=3
