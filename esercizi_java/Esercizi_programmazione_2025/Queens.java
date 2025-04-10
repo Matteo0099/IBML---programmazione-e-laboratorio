@@ -29,18 +29,18 @@ public class Queens {
     public static int numeroCompletamenti( Board b ) {
         
         int n = b.size();
-        int q = b.queensOn(); 
+        int q = b.QueensOn(); 
         
-        if( q == n ) {
+        if( q == n ) {   // caso in cui è stata trovata
             return 1;
         } else {
-            int count = 0;   // counter regine (di b)  - 0
-            int i = q + 1;   // indice di riga         - 1
+            int count = 0;   // counter regine (di b)   - 0
+            int i = q + 1;   // indice di riga          - 1
             for( int j=1; j<=n; j++ ) {
                 // se è minacciata --> NON metto regina
                 // se NON è minacciata --> la metto
                 if( !b.underAttack(i,j) ) {
-                    count = count + numeroCompletamenti(b.addQueens(i,j));   // somma n* completamenti
+                    count = count + numeroCompletamenti(b.addQueen(i,j));   // somma n* completamenti - valore cumulativo
                 }
             }
             return count;
@@ -49,30 +49,32 @@ public class Queens {
     
     // BoardList : esercizio (lista soluzioni,completamenti)
     
-    public static BoardList listaSoluzioni( int n ) {  // n > 0
+    public static Board listaSoluzioni( int n ) {  // n > 0
         
-        //return listaCompletamenti( new Board(n) );
+        return listaCompletamenti( new Board(n) );
     }
     
-    public static BoardList listaCompletamenti( Board b ) {
+    public static Board listaCompletamenti( Board b ) {
         
         int n = b.size();
-        int q = b.queensOn(); 
+        int q = b.QueensOn(); 
         
         if( q == n ) {
             return BoardSList.NULL_BOARDLIST.cons( b );   // soluzione: lista vuota
         } else {
-            BoardSList lista = 0;   // counter regine (di b)  - 0
+            Board lista = 0;   // counter regine (di b)  - 0
             int i = q + 1;          // indice di riga         - 1
             for( int j=1; j<=n; j++ ) {
                 // se è minacciata --> NON metto regina
                 // se NON è minacciata --> la metto
                 if( !b.underAttack(i,j) ) {
-                    lista = lista.append( listaCompletamenti(b.addQueens(i,j)) );   // somma n* completamenti
+                    lista = lista.append( listaCompletamenti(b.addQueen(i,j)) );   // somma n* completamenti
                 }
             }
             return lista;
         }
     }
+    
+    
     
 } // class Queens
