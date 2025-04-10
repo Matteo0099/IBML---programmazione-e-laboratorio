@@ -1,7 +1,12 @@
 #BlueJ class context
 comment0.target=Test
-comment1.params=inf\ sup
-comment1.target=IntSList\ intervallo(int,\ int)
+comment0.text=\r\n\ classe\ test,\ riguardo\ la\ tavola\ rotonda\ di\ G.\ Flavio\ \r\n
+comment1.params=n
+comment1.target=int\ gFlavio(int)
 comment2.params=n
-comment2.target=int\ gFlavio(int)
-numComments=3
+comment2.target=int\ gFlavio2(int)
+comment3.params=n
+comment3.target=double\ tempoRilevato(int)
+comment4.params=
+comment4.target=void\ test()
+numComments=5

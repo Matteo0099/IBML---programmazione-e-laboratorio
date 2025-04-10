@@ -1,0 +1,18 @@
+#BlueJ class context
+comment0.target=TavRotonda2
+comment0.text=\r\n\ \ \ Tavrotonda\ 2?\r\n\ \ TavRotonda\ t;\r\n\ \ int\ n;\r\n\ \r\n\ \ \ \ new\ TavRotonda(n)\ \ \ \:\ TavRotonda\r\n\ \ \ \ t.numCavalieri()\ \ \ \ \:\ int\r\n\ \ \ \ t.cavConBrocca()\ \ \ \ \:\ int\r\n\ \ \r\n\ \ \ \ t.serve()\ \ \ \ \ \ \ \ \ \ \ \:\ TavRotonda\r\n\ \ \ \ t.passa()\ \ \ \ \ \ \ \ \ \ \ \:\ TavRotonda\ \ \r\n
+comment1.params=n
+comment1.target=TavRotonda2(int)
+comment2.params=n\ brocca\ altri\ rovesciati
+comment2.target=TavRotonda2(int,\ int,\ SList,\ SList)
+comment3.params=
+comment3.target=int\ numCavalieri()
+comment4.params=
+comment4.target=int\ cavConBrocca()
+comment5.params=
+comment5.target=TavRotonda2\ serve()
+comment6.params=
+comment6.target=TavRotonda2\ passa()
+comment7.params=inf\ sup
+comment7.target=SList\ intervallo(int,\ int)
+numComments=8

@@ -21,6 +21,9 @@
 **/
 
 public class Queens {
+    
+    private static final SList<Board> NULL_BOARDLIST = new SList<Board>();  // lista vuota unica
+    
     public static int numeroSoluzioni( int n ) {
         
         return numeroCompletamenti( new Board(n) );
@@ -49,20 +52,20 @@ public class Queens {
     
     // BoardList : esercizio (lista soluzioni,completamenti)
     
-    public static Board listaSoluzioni( int n ) {  // n > 0
+    public static SList<Board> listaSoluzioni( int n ) {  // n > 0
         
         return listaCompletamenti( new Board(n) );
     }
     
-    public static Board listaCompletamenti( Board b ) {
+    public static SList<Board> listaCompletamenti( Board b ) {
         
         int n = b.size();
         int q = b.QueensOn(); 
         
         if( q == n ) {
-            return BoardSList.NULL_BOARDLIST.cons( b );   // soluzione: lista vuota
+            return NULL_BOARDLIST.cons( b );   // soluzione: lista vuota
         } else {
-            Board lista = 0;   // counter regine (di b)  - 0
+            SList<Board> lista = NULL_BOARDLIST;   // counter regine (di b)  - 0
             int i = q + 1;          // indice di riga         - 1
             for( int j=1; j<=n; j++ ) {
                 // se è minacciata --> NON metto regina

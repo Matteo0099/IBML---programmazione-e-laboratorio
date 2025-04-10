@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.target=Queens
+comment0.text=\r\n\ (\ non\ ancora\ da\ compilare\ )\r\n\ \r\n\ Determinare\ n*\ soluzioni\ dato\ n\ scacchiera.\r\n\ \r\n\ Board\ b;\r\n\ int\ n,\ i,\ j;\r\n\ \r\n\ b\ \=\ new\ Board(n)\r\n\ \r\n\ b.size()\ \ \ \ \ \ \ \ \ \ \ \ \ \:\ int\r\n\ b.queensOn()\ \ \ \ \ \ \ \ \ \:\ int\r\n\ \r\n\ b.underAttack(i,j)\ \ \ \:\ Boolean\r\n\ \r\n\ b.addQueen(i,j)\ \ \ \ \ \ \:\ Board\r\n\ \r\n\ b.arrangement()\ \ \ \ \ \ \:\ String\r\n\ \r\n
+comment1.params=n
+comment1.target=int\ numeroSoluzioni(int)
+comment2.params=b
+comment2.target=int\ numeroCompletamenti(Board)
+comment3.params=n
+comment3.target=SList\ listaSoluzioni(int)
+comment4.params=b
+comment4.target=SList\ listaCompletamenti(Board)
+numComments=5

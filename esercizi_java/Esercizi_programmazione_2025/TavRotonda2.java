@@ -1,8 +1,8 @@
 
 /**
- * 
- *  TavRotonda t;
- *  int n;
+ *   Tavrotonda 2?
+     *  TavRotonda t;
+     *  int n;
  * 
  *    new TavRotonda(n)   : TavRotonda
  *    t.numCavalieri()    : int
@@ -10,42 +10,30 @@
  *  
  *    t.serve()           : TavRotonda
  *    t.passa()           : TavRotonda  
- *
- *    --------------------------
- *    CALCOLI
- *    
- *    n     : k=n-1
- *    serve : k-1
- *    passa : k-1  -cons
- *    serve : k-2
- *    passa : k-2  -cons
- *    ...
- *    
- *    (n-1) + (n-2) + (n-3) + ... + 1  =  ? 
- *    
- *    -------------------------- 
- *    
  */
 
-public class TavRotonda {
+public class TavRotonda2 {
     
     private static final SList<Integer> NULL_INTLIST = new SList<Integer>(); // lista vuota è unica (1)
     private final int n;
     private final int brocca;
     private final SList<Integer> altri;   // cambia poco da int->integer (valore->oggetto)
+    private final SList<Integer> rovesciati;
     
-    public TavRotonda( int n ) {  // n > 0
+    public TavRotonda2( int n ) {  // n > 0
         
         this.n = n;
         brocca = 1; 
         altri = intervallo( 2, n );
+        rovesciati = NULL_INTLIST;
     }
     
-    private TavRotonda( int n, int brocca, SList<Integer> altri ) {  // n > 0
+    private TavRotonda2( int n, int brocca, SList<Integer> altri, SList<Integer> rovesciati ) {  // n > 0
         
         this.n = n;
         this.brocca = brocca; 
         this.altri = altri;
+        this.rovesciati = rovesciati;
     }
     
     // metodi
@@ -59,20 +47,29 @@ public class TavRotonda {
         return brocca; 
     }
     
-    public TavRotonda serve() {
+    public TavRotonda2 serve() {
         
         if ( n > 1 ) {
-            return new TavRotonda( n-1, brocca, altri.cdr() );
+            if( altri.isNull() ) {
+                SList<Integer> s = rovesciati.reverse();
+                return new TavRotonda2( n-1, brocca, s.cdr(), NULL_INTLIST );
+            } else {
+                return new TavRotonda2( n-1, brocca, altri.cdr(), rovesciati );
+            }
         } else {
             return this;
         }
     }
     
-    public TavRotonda passa() {
+    public TavRotonda2 passa() {
         
         if ( n > 1 ) {
-            SList<Integer> ultimo = NULL_INTLIST.cons(brocca);
-            return new TavRotonda( n, altri.car(), altri.cdr().append(ultimo)  );
+            if( altri.isNull() ) {
+                SList<Integer> s = ( rovesciati.cons(brocca) ).reverse();
+                return new TavRotonda2( n-1, s.car(), s.cdr(), NULL_INTLIST );
+            } else {
+                return new TavRotonda2( n, altri.car(), altri.cdr(), rovesciati.cons(brocca) );
+            }
         } else {
             return this;
         }
@@ -83,7 +80,7 @@ public class TavRotonda {
         if (inf > sup) {
             return NULL_INTLIST;
         } else {
-            return intervallo( inf + 1, sup ).cons(inf);
+            return intervallo( inf+1, sup ).cons(inf);
         }
     }
 

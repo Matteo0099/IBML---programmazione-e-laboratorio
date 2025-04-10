@@ -3,36 +3,42 @@
  * IntSList: liste di interi nello stile di Scheme
  * 
  *   IntSList s, t;
- *   int e;
+ *   T e
+ *   int i;
  *   
- *   new IntSList() : IntSList [null]
+ *   new SList<T>() : IntSList [null]
  *   
- *   s.isNull() : boolean
- *   s.car()    : int
- *   s.cdr()    : IntSList
- *   s.cons(e)  : IntSList  
+ *   s.isNull()     : boolean
+ *   s.car()        : int
+ *   s.cdr()        : IntSList
+ *   s.cons(e)      : IntSList 
+ *   
+ *   s.length()     : int
+ *   s.listRef(i)   : T    // esercizio
+ *   s.append(t)    : IntSList
+ *   s.reverse()    : IntSList
  */
 
-public class IntSList extends Test {
+public class SList<T> {
     
     // creazione di una lista
-    public static final IntSList NULL_INTLIST = new IntSList();
+    public static final SList NULL_INTLIST = new SList();
     
     // variabili d'istanza:
-    private boolean empty;
-    private int first; 
-    private IntSList rest;
+    private final boolean empty;
+    private final T first; 
+    private final SList<T> rest;
     
     /**
      * Costruttore degli oggetti di classe  IntSList
      */
-    public IntSList() {
+    public SList() {
        empty = true;
-       first = 0; 
+       first = null; 
        rest = null;
     }
     
-    public IntSList( int e, IntSList r ) {
+    public SList( T e, SList <T> r ) {
         empty = false;
         first = e; 
         rest = r;
@@ -47,28 +53,28 @@ public class IntSList extends Test {
         return empty;        
     }
     
-    public int car() {
+    public T car() {
 
         return first;
     }
     
-    public IntSList cdr() {
+    public SList<T> cdr() {
         
         return rest;    
     }
     
-    public IntSList cons( int e ) {
+    public SList<T> cons( T e ) {
         
-        return new IntSList( e, this );
+        return new SList<T>( e, this );
     }
     
-    public boolean equals( IntSList t ) {
+    public boolean equals( SList t ) {
         
-        IntSList s = this; 
-        IntSList r = t; 
+        SList <T> s = this; 
+        SList <T> r = t; 
         while ( !s.isNull() && !r.isNull() ) {
             // se sono diversi, le liste sono diverse
-            if ( s.car() != r.car() ) {
+            if ( s.car().equals(r.car()) ) {
                 return false;
             }
             s = s.cdr();
@@ -80,7 +86,7 @@ public class IntSList extends Test {
     public int length() {
         
         int len = 0;
-        IntSList r = this;
+        SList <T> r = this;
         while ( !r.isNull() ) {
             len = len + 1;
             r = r.cdr();
@@ -92,11 +98,11 @@ public class IntSList extends Test {
     
     /**
      * 
-     *  esercizio: listRef(...)
+     *  esercizio: listRef(...)  // es.
      * 
     **/
     
-    public IntSList append ( IntSList t ) {
+    public SList<T> append( SList<T> t ) {
         
         if ( isNull() ) {
             return t;
@@ -106,10 +112,10 @@ public class IntSList extends Test {
     }
     
     
-    public IntSList reverse ( IntSList t ) {
+    public SList<T> reverse () {
        
-        IntSList rev = NULL_INTLIST;
-        IntSList s = this;
+        SList<T> rev = new SList<T>();
+        SList<T> s = this;
         while ( !s.isNull() ) {
             rev = rev.cons( s.car() );
             s = s.cdr();
@@ -125,7 +131,7 @@ public class IntSList extends Test {
             return "()";
         } else {
             String s = "(" + car();
-            IntSList r = cdr();
+            SList<T> r = cdr();
             while ( !r.isNull() ) {
                 s = s + "" + r.car();
                 r = r.cdr();

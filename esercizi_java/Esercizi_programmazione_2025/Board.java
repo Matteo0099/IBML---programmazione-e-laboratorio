@@ -23,7 +23,7 @@
     public class Board {
         
         private static final String ROWS = "123456789ABCDEF";
-        private static final String COLS = "abcdefghilmnopqrstuvz";
+        private static final String COLS = "abcdefghilmno";
     
         private final int n;   // n=var
         private final int q; 
