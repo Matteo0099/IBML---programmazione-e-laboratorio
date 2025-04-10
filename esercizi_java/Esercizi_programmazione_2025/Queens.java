@@ -78,6 +78,21 @@ public class Queens {
         }
     }
     
+    // Dimensioni scacchiera: n-1 , n;  numero sol?
+    public static SList<Object> listaNumeriSol( int n ) {
+        
+        // oggetto -> intero  (difficile conversione XD)
+        return intervallo(1,n).map( (x) -> numeroSoluzioni(x) );   // lambda espressione
+    }    
+    
+    private static SList<Integer> intervallo( int inf, int sup ) {
+        
+        if (inf > sup) {
+            return new SList<Integer>();   // restituisce una lista di interi
+        } else {
+            return intervallo( inf + 1, sup ).cons(inf);
+        }
+    }
     
     
 } // class Queens

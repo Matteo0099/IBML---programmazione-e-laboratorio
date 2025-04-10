@@ -19,6 +19,8 @@
  *   s.reverse()    : IntSList
  */
 
+import java.util.function.*;  // prendo tutte le classi della libreria.
+
 public class SList<T> {
     
     // creazione di una lista
@@ -124,19 +126,30 @@ public class SList<T> {
         return rev;  
     }
     
+    // applico f a tutti gli elementi della lista destinatario di tipo "t". 
+    public SList<Object> map( Function<T,Object> f ) {  // f : T -> Object
+        // con tipo "object" siamo molto generali sul tipo.
+        
+        if ( isNull() ) {
+            return new SList<Object>();
+        } else {
+            return ( cdr().map(f) ).cons( f.apply(car()) );   // f(car())
+        }
+    }
     
     // ...ogni iterazione è il cdr del cdr precedente...
     public String toString() {
+        
         if ( isNull() ) {   // this.isNull() è uguale   
             return "()";
         } else {
-            String s = "(" + car();
+            String s = " ( " + car();
             SList<T> r = cdr();
             while ( !r.isNull() ) {
                 s = s + "" + r.car();
                 r = r.cdr();
             }
-            return s + ")";
+            return s + " ) ";
         }
     }
 }
