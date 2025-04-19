@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.target=Memoization
+comment0.text=\r\n\ Fibonacci\r\n\ Fib(4)\=2\r\n\ ...\r\n
+comment1.params=n
+comment1.target=long\ fib(int)
+numComments=2
