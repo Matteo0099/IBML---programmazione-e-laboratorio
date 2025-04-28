@@ -7,9 +7,11 @@ comment2.params=n
 comment2.target=long\ fibMem(int)
 comment3.params=n\ mem
 comment3.target=long\ fibRec(int,\ long[])
-comment4.params=i\ j
-comment4.target=long\ manh(int,\ int)
-comment4.text=\r\n\ Prendo\ spunto\ dal\ problema\ delle\ strade\ di\ Manhattan\r\n\ \ (define\ Manhattan\r\n\ \ \ \ \ \ (lambda\ (i\ j)\r\n\ \ \ \ \ \ \ \ \ (if\ (or\ (\=\ i\ 0)\ (\=\ j\ 0))\ \r\n\ \ \ \ \ \ \ \ \ \ \ \ \ 1\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ (+\ (Manhattan\ (-\ i\ 1)\ j)\ (Manhattan\ i\ (-\ j\ 1)))\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ )\r\n\ \ \ \ \ \ \ \ ))\r\n
-comment5.params=i\ j\ mem
-comment5.target=long\ manhRec(int,\ int,\ long[][])
-numComments=6
+comment4.params=u\ v
+comment4.target=int\ llcs(java.lang.String,\ java.lang.String)
+comment4.text=\r\n\ Traduzione\ in\ java\ del\ problema\ scheme\ di\ llcs\ (longest\ common\ subsequence)\r\n
+comment5.params=u\ v\ mem
+comment5.target=int\ llcsRec(java.lang.String,\ java.lang.String,\ int[][])
+comment6.params=i\ j
+comment6.target=long\ manhDP(int,\ int)
+numComments=7

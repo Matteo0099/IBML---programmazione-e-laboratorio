@@ -61,40 +61,60 @@ public class Memoization {
         return mem[n];
     }
     
-    private static final int UNKNOWN = 0;
+    private static final int UNKNOWN = -1;
     
     /**
-     * Prendo spunto dal problema delle strade di Manhattan
-     *  (define Manhattan
-     *      (lambda (i j)
-     *         (if (or (= i 0) (= j 0)) 
-     *             1
-     *             (+ (Manhattan (- i 1) j) (Manhattan i (- j 1)))
-     *             )
-     *        ))
+     * Traduzione in java del problema scheme di llcs (longest common subsequence)
      */
-    
-    public static long manh(int i, int j) {
-        long[][] mem = new long[i+1][j+1];
+    public static int llcs(String u, String v) {
         
-        for(int x = 0; x <= i; x = x + 1) {
-            for(int y = 0; y <= j; y = y + 1) {
-                mem[x][y] = UNKNOWN;
+        int m = u.length();
+        int n = v.length();
+        
+        int[][] mem = new int[m+1][n+1];
+        
+        for(int i = 0; i <= m; i++) {
+            for(int j = 0; j <= n; j++) {
+                mem[i][j] = UNKNOWN;
             }
         }
-        return manhRec(i, j, mem);
+        return llcsRec(u,v,mem);
     }
     
-    private static long manhRec(int i, int j, long[][] mem) {
+    private static int llcsRec(String u, String v, int[][] mem) {
+        int i = u.length();
+        int j = v.length();
+        
         if(mem[i][j] == UNKNOWN) {
             if((i == 0) || (j == 0)) {
-                mem[i][j] = 1;
+                mem[i][j] = 0;
+            } else if (u.charAt(0) == v.charAt(0)) {
+                mem[i][j] = 1 + llcsRec(u.substring(1), v.substring(1), mem);
             } else {
-                mem[i][j] = manhRec(i-1, j, mem) + manhRec(i, j-1, mem);
+                mem[i][j] = Math.max(llcsRec(u.substring(1),v,mem), 
+                                     llcsRec(u,v.substring(1),mem) ); 
             }
         }
         return mem[i][j];
     }
     
-    
+    public static long manhDP(int i, int j) {
+        
+        long[][] mem = new long[i+1][j+1]; 
+        
+        for(int y = 0; y<=j; y++)
+            mem[0][y] = 1;
+        
+        for(int x = 1; x<=i; x++)
+            mem[x][0] = 1;
+        
+        // parto da 1 perchè lo 0 lo ho già calcolato, 
+        // quindi sopra(x-1) e a sx(j-1) ci deve essere qualcosa. 
+        // Matrice: (i+1) * (j+1)
+        for(int x = 1; x<=i; x++) 
+            for(int y = 1; y<=j; y++) 
+                mem[x][y] = mem[x-1][y] + mem[x][y-1];
+        
+        return mem[i][j];
+    }
 }
