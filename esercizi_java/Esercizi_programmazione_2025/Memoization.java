@@ -55,11 +55,46 @@ public class Memoization {
             if(n<2) {
                 mem[n] = 1;
             } else {
-                mem[n] = (fib(n-2,mem)+fib(n-1,mem));
+                mem[n] = (fibRec(n-2,mem)+fibRec(n-1,mem));
             }
         }
         return mem[n];
     }
     
     private static final int UNKNOWN = 0;
+    
+    /**
+     * Prendo spunto dal problema delle strade di Manhattan
+     *  (define Manhattan
+     *      (lambda (i j)
+     *         (if (or (= i 0) (= j 0)) 
+     *             1
+     *             (+ (Manhattan (- i 1) j) (Manhattan i (- j 1)))
+     *             )
+     *        ))
+     */
+    
+    public static long manh(int i, int j) {
+        long[][] mem = new long[i+1][j+1];
+        
+        for(int x = 0; x <= i; x = x + 1) {
+            for(int y = 0; y <= j; y = y + 1) {
+                mem[x][y] = UNKNOWN;
+            }
+        }
+        return manhRec(i, j, mem);
+    }
+    
+    private static long manhRec(int i, int j, long[][] mem) {
+        if(mem[i][j] == UNKNOWN) {
+            if((i == 0) || (j == 0)) {
+                mem[i][j] = 1;
+            } else {
+                mem[i][j] = manhRec(i-1, j, mem) + manhRec(i, j-1, mem);
+            }
+        }
+        return mem[i][j];
+    }
+    
+    
 }
