@@ -1,4 +1,3 @@
-
 /**
  * ( non ancora da compilare )
  * 
@@ -22,7 +21,7 @@
 
 public class Queens {
     
-    private static final SList<Board> NULL_BOARDLIST = new SList<Board>();  // lista vuota unica
+    private static final SList<Board> NULL_BOARDLIST = new SList<>();  // lista vuota unica
     
     public static int numeroSoluzioni( int n ) {
         
@@ -38,19 +37,19 @@ public class Queens {
             return 1;
         } else {
             int count = 0;   // counter regine (di b)   - 0
-            int i = q + 1;   // indice di riga          - 1
-            for( int j=1; j<=n; j++ ) {
+            int i = q;   // indice di riga          - 1
+            for (int j = 0; j < n; j++) {
                 // se è minacciata --> NON metto regina
                 // se NON è minacciata --> la metto
-                if( !b.underAttack(i,j) ) {
-                    count = count + numeroCompletamenti(b.addQueen(i,j));   // somma n* completamenti - valore cumulativo
+                if( !b.underAttack(i, j) ) {
+                    Board nuova = b.addQueen(i, j);  // nuova scacchiera
+                    count += numeroCompletamenti(nuova);
                 }
+
             }
             return count;
         }
     }
-    
-    // BoardList : esercizio (lista soluzioni,completamenti)
     
     public static SList<Board> listaSoluzioni( int n ) {  // n > 0
         
@@ -71,7 +70,8 @@ public class Queens {
                 // se è minacciata --> NON metto regina
                 // se NON è minacciata --> la metto
                 if( !b.underAttack(i,j) ) {
-                    lista = lista.append( listaCompletamenti(b.addQueen(i,j)) );   // somma n* completamenti
+                    b.addQueen(i,j);
+                    lista = lista.append( listaCompletamenti(b) );   // somma n* completamenti
                 }
             }
             return lista;
@@ -93,6 +93,4 @@ public class Queens {
             return intervallo( inf + 1, sup ).cons(inf);
         }
     }
-    
-    
 } // class Queens
