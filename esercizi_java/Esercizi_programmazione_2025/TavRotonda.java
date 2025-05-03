@@ -28,6 +28,51 @@
  */
 
 public class TavRotonda {
+    private int n; 
+    private int b;
+    private int[] cav;   // cavalieri
+     
+    public TavRotonda(int n) {
+        
+        this.n = n;
+        b = 0;
+        cav = new int[ 2*n-1 ];
+        
+        for(int k=1; k<=n; k++) {
+            cav[k-1] = k;
+        }
+    }
+    
+     // metodi
+    public int numCavalieri() {
+        
+        return n;
+    }
+    
+    public int cavConBrocca() {
+        
+        return cav[b]; 
+    }
+    
+    public void serve() {
+        
+        if ( n > 1 ) {
+            cav[b+1] = cav[b];
+            b = b + 1;
+            n = n - 1;
+        } 
+    }
+    
+    public void passa() {
+        
+        if ( n > 1 ) {
+            cav[b+n] = cav[b];
+            b = b + 1;
+        }
+    }
+}
+
+/*public class TavRotonda {
     
     private static final SList<Integer> NULL_INTLIST = new SList<Integer>(); // lista vuota è unica (1)
     private final int n;
@@ -87,4 +132,4 @@ public class TavRotonda {
         }
     }
 
-}  // class TavRotonda
+}*/  // class TavRotonda

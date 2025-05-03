@@ -11,13 +11,14 @@ public class Test {
 
         while ( tav.numCavalieri() > 1 ) {
             
-            tav = tav.serve(); // Metodo chiamato sull'istanza
-            tav = tav.passa(); // Verifica se il metodo è "passa" o "passa"
+            tav.serve(); // Metodo chiamato sull'istanza
+            tav.passa(); // Verifica se il metodo è "passa" o "passa"
         }
+        
         return tav.cavConBrocca();
     }
     
-    public static int gFlavio2( int n ) {   // n > 0
+    /*public static int gFlavio2( int n ) {   // n > 0
         TavRotonda2 tav = new TavRotonda2( n );
         
         while( tav.numCavalieri() > 1 ) {
@@ -62,6 +63,6 @@ public class Test {
             double t = tempoRilevato( n );
             System.out.println( t + "msec: " + (t / n));
         }
-    }
+    }*/
     
 }  // class Test
