@@ -1,11 +1,12 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname ess) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; Semplice prodotto da due numeri x,y.
 (define product
-  (lambda (x n)
-    (if (or (= x 0) (= n 0))
+  (lambda (x y)
+    (if (or (= x 0) (= y 0))
         0
-        (+ x (product x (- n 1)))
+        (+ x (product x (- y 1)))
         )
     ))
 
@@ -355,3 +356,57 @@ Caso finale: altrimenti restituisce #f.
         (+ (paths i (- j 1)) (paths (- i 1) j)) ; i,j>0
      )
  ))
+
+
+
+(define es_Strade2
+  (lambda (i j)
+    (cond ((= i 0)
+           1
+           )
+          ((= j 0)
+           1)
+          (else
+            (+
+             (es_Strade2 i (- j 2))
+             (es_Strade2 (- i 1) j)
+             )
+          )
+     )
+ ))
+
+
+; 1 IMPLEMENTAZIONE
+; (es-similManhattan 0 0 3 2) --> 32 totali combinazioni
+"""(define es-similManhattan
+  (lambda (x y W H)     ; A(x,y) origine, B(W,H) traguardo.
+    (cond
+      ((or (> x W) (> y H)) 0)         ; fuori griglia
+      ((and (= x W) (= y H)) 1)        ; arrivo
+      (else
+       (+ (es-similManhattan (+ x 1) y W H)
+          (es-similManhattan (+ x 2) y W H)
+          (es-similManhattan x (+ y 1) W H)
+          (es-similManhattan x (+ y 2) W H)))
+     )))"""
+
+
+; 2 IMPLEMENTAZIONE (GIUSTA)
+; (es-similManhattan 0 0 3 2) --> 32 totali combinazioni
+(define es-simileManhattan
+  (lambda (W H)
+    (cond
+      ((or (< W 0) (< H 0)) 0)       ; Caso base 1: Fuori dalla griglia
+      ((and (= W 0) (= H 0)) 1)      ; Caso base 2: Arrivo (un percorso trovato)
+      (else
+       (+ (es-simileManhattan (- W 1) H)       ; Movimento: Destra di 1
+          (es-simileManhattan (- W 2) H)       ; Movimento: Destra di 2
+          (es-simileManhattan W (- H 1))       ; Movimento: Giù di 1
+          (es-simileManhattan W (- H 2))       ; Movimento: Giù di 2
+          )
+       )
+     )
+  ))
+
+
+
