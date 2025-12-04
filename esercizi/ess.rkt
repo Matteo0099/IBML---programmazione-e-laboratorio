@@ -358,24 +358,6 @@ Caso finale: altrimenti restituisce #f.
  ))
 
 
-
-(define es_Strade2
-  (lambda (i j)
-    (cond ((= i 0)
-           1
-           )
-          ((= j 0)
-           1)
-          (else
-            (+
-             (es_Strade2 i (- j 2))
-             (es_Strade2 (- i 1) j)
-             )
-          )
-     )
- ))
-
-
 ; 1 IMPLEMENTAZIONE
 ; (es-similManhattan 0 0 3 2) --> 32 totali combinazioni
 """(define es-similManhattan
