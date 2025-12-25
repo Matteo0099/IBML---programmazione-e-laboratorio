@@ -391,4 +391,271 @@ Caso finale: altrimenti restituisce #f.
   ))
 
 
+; Numeri di Stirling del II tipo
+(define stirling       ; val: intero
+  (lambda (n k)  ; [1 <= k <= n] interi
+    (if (or (= k 1)(= k n))
+        1
+        ;   15 + (3 * 25) = 90 modi per 6 pasticcini in 3 piatti
+        (+ (stirling (- n 1)(- k 1)) (* k (stirling (- n 1) k)))
+     )
+ ))
+
+
+
+; lunghezza della sottosequenza comune più lunga (llcs):
+; 1.situazione:     llcs("", y) = llcs(x, "") = 0
+; 2.situazione:     llcs(ax, ay) = 1 + llcs(x, y)
+; 3.situazione:     llcs(ax, by) = max( llcs(x, by), llcs(ax, y) ) se a!=b
+
+; NB: Potrebbe non essere possibile confrontare i due simboli,
+;     per esempio quando manca 1 dei 2 simboli.
+; (substring u 1) ---> (tolgo il primo carattere.)
+
+
+; versione 1
+(define llcs1       ; val: intero
+  (lambda (u v)    ; u,v: stringhe
+    (cond ((or (string=? u "") (string=? v "")) ; 2/2 vuote
+           0
+           )
+          ((char=? (string-ref u 0) (string-ref v 0))  ; 1 carattere per entrambe
+           (+ 1 (llcs1 (substring u 1) (substring v 1)))
+           )
+          (else
+            (max
+              (llcs1 (substring u 1) v)
+              (llcs1 u (substring v 1))
+             )
+           )
+      )
+ ))
+
+; versione 2 - finale
+(define llcs2       ; val: stringa
+  (lambda (u v)    ; u,v: stringhe
+    (cond ((or (string=? u "") (string=? v "")) ; 2/2 vuote
+           ""
+           )
+          ((char=? (string-ref u 0) (string-ref v 0))  ; 1 carattere per entrambe
+            (string-append (substring u 0 1)
+                           (llcs1 (substring u 1) (substring v 1))
+             )
+           )
+          (else
+            (longer
+              (llcs1 (substring u 1) v)
+              (llcs1 u (substring v 1))
+             )
+           )
+      )
+ ))
+
+(define longer
+  (lambda (u v)  ; stringhe
+    (cond ((> (string-length u) (string-length v))
+            u
+           )
+          ((< (string-length u) (string-length v))
+            v
+           )
+          ((= (random 2) 0)  ; testa o croce (non deterministico)
+            v
+           )
+          (else
+            u
+           )
+     )
+ ))
+; oppure
+(define longer2
+  (lambda (u v)
+    (let ((m (string-length u))
+          (n (string-length v))
+          )
+      (cond ((< m n)
+             v)
+            ((> m n)
+             u)
+            ((= (random 2) 0)
+             v)
+            (else
+             u)
+       )
+    )
+ ))
+    
+
+
+;; **Liste in Scheme** (5 ingredienti fondamentali)
+
+; 1. Lista vuota: null '()
+
+; Aggiunta di elementi: cons  -> constratto
+; (cons 5 (cons 10 (cons 11 null))) ...
+
+; *****************
+; Acquisizione 1* elemento e del resto una lista: car, cdr.
+; *****************
+;
+
+; car+cdr = cons(inverso) -> (car (cons 5 (cons 10 null)))
+; (cdr (cons 5 (cons 10 null))) = 10
+; (cdr (cons 5 (cons 54 (cons 10 null)))) = 54 10
+
+; Verifica se lista è vuota: null?   -> (null? (cons 5 null)) = false
+
+; fino a dove si possono fare le liste in scheme:
+; (1 2 3 4 5)
+; (1 . (2 3 4 5))
+; (1 . (2 . (3 4 5)))
+; (1 . (2 . (3 . (4 5))))
+; (1 . (2 . (3 . (4 .  (5)))))
+; (1 . (2 . (3 . (4 .  (5 . ())))))
+
+; (cons 1 (cons 2 (cons 3 (cons 4 (cons 5 null)))))  = (list 1 2 3 4 5)
+
+
+; DIFFERENZA LISTA VS QUOTE
+; LISTA: LISTA DI ELEMENTI
+; QUOTE: LISTA (DI DATI) SENZA VALUTAZIONE
+
+; (list 1 (+ 1 1) (+ 2 1) (* 2 2) 5)  =  (list 1 2 3 4 5)
+; '(1 (+ 1 1) (+ 2 1) (* 2 2) 5)      =  (list 1 (list '+ 1 1) (list '+ 2 1) (list '* 2 2) 5)
+
+; NB: quello che segue l'apice, NON viene interpretato, ovvero non viene eseguita alcuna operazione.
+; In alcuni casi tra LIST E QUOTE hanno lo stesso risultato, in altri no.
+; E' PIU' PROBABILE USARE LIST. MOLTO RARAMENTE QUOTE.
+
+
+
+;; list-ref  
+; (lista-ref '(1 2 3 4 5) 2) ---> 3
+; l'indice parte da 0, arriva fino a i-1 con i=length(lista)
+
+(define lista-ref  ; val: tipo dell'elemento
+  (lambda (s i)   ; s: lista, i: indice (pos. nella lista)
+    (if (= i 0)
+        (car s)
+        (lista-ref (cdr s) (- i 1))
+     )
+ ))
+
+
+;; length --> es(lunghezza)
+
+
+
+
+;; append
+(define giustapponi  ; val: 
+  (lambda (s t)      ; s,t: liste
+    (if (null? s)
+        t
+        (cons (car s) (giustapponi (cdr s) t))
+     )
+ ))
+
+; append != cons
+; la differenza fondamentale sta in 2 osservazioni:
+; -append: ha 2 argomenti che sono entrambi liste. E' simmetrico
+; -cons: il 1 argomento può essere una lista, mentre il 2 DEVE essere una lista. NON è simmetrico.
+; esempio
+; (cons 1 '()) != (cons '() 1) => error 
+; (cons x y) = (append (list x) y)
+
+
+
+;; reverse
+(define rovescia-1  ; val: lista
+  (lambda (s)     ; s: lista
+    (if (null? s)
+        null
+        (append (rovescia-1 (cdr s)) (list (car s)))
+     )
+ ))
+
+;; reverse ricorsivo
+(define rovescia-list
+  (lambda (s)
+    (rovescia-rec s '())
+ ))
+
+(define rovescia-rec
+  (lambda (s t)
+    (if (null? s)
+        t
+        (rovescia-rec (cdr s) (cons (car s) t))
+     )
+ ))
+
+; riempio s
+; (1 2 3 4 5) ()
+; (2 3 4 5) (1)
+; (3 4 5) (1 2)
+; (4 5) (1 2 3)
+; (5) (1 2 3 4)
+; () (1 2 3 4 5)
+; restituisco t in caso vuota.
+
+
+
+; differenza tra (substring u 1) e (substring u 0 1) con u = "ciao"
+; ---> 
+
+
+
+;; LCS: variazioni sul tema - (lcs+)
+; input esempio: (lcs+ "albero" "blatta")
+;     --> (list (list "b" 2 0))
+;     --> (list (list "a" 0 2))
+;     --> (list (list "l" 1 1))
+; 
+; NB-1: Assieme alla lettera in comune cè la posizione
+;       della lettera nella prima e nella seconda stringa.
+; NB-2: la lettera in comune può essere diversa.
+; NB-3: si avrà lista di liste(**terne**).
+ 
+(define lcs+         ; val: lista di terne <stringa, indice1, indice2>
+  (lambda (u v)      ; u,v: stringhe
+    (lcs-rec u 0 v 0)
+ ))
+
+(define lcs-rec      ; val: lista di terne <stringa, indice1, indice2>
+  (lambda (u i v j)
+    (cond ((or (string=? u "") (string=? v ""))                ; entrambe vuote
+            null
+          )
+          ((char=? (string-ref u 0) (string-ref v 0))          ; 1* carattere uguale per entrambe
+           ; aggiungo 
+           (cons (list (substring u 0 1) i j)         ; (list "b" 2 0)
+                       (lcs-rec (substring u 1) (+ i 1) (substring v 1) (+ j 1))
+            )
+          )
+          (else
+           (longer+                                             ; altrimenti iniziano con caratteri
+                    (lcs-rec (substring u 1) (+ i 1) v j)            ; diversi e prendo la più lunga comune.
+                    (lcs-rec u i (substring v 1) (+ j 1))
+            )
+           )
+      )
+  ))
+
+(define longer+  ; val: lista di terne
+  (lambda (u v)  ; u,v: lista di terne
+    (let ((m (length u))
+          (n (length v))
+          )
+         (cond ((< m n)
+                v)
+               ((> m n)
+                u)
+               ((= (random 2) 0)
+                v)
+               (else
+                u)
+          )
+     )
+  ))
+
 
