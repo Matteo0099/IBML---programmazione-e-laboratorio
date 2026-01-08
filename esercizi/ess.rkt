@@ -659,3 +659,141 @@ Caso finale: altrimenti restituisce #f.
   ))
 
 
+
+
+;; All-LCS: Voglio vedere tutte le soluzioni possibili
+;; input di esempio:
+;; (all-lcs "palla" "pala") --> (list "pala")
+;; (all-lcs "arto" "atrio") --> (list "ato" "aro" "aro")
+
+(define all-lcs                                         ; val: lista di stringhe
+  (lambda (u v)                                         ; u,v: stringhe
+    (cond ((or (string=? u "") (string=? v ""))         ; caso base: entrambe vuote
+            (list "")
+          )
+          ((char=? (string-ref u 0) (string-ref v 0))   ; 1* carattere uguale per entrambe
+           ; aggiungo 
+           (all-prefix (substring u 0 1)                ; (list "b" 2 0)
+                       (all-lcs (substring u 1) (substring v 1))
+            )
+           )
+          (else
+           (all-longer                                  ; altrimenti iniziano con caratteri
+                    (all-lcs (substring u 1) v)         ; diversi e prendo la più lunga comune.
+                    (all-lcs u (substring v 1))
+            )
+           )
+      )
+ ))
+
+(define all-prefix  ; val: lista di stringhe
+  (lambda (p s)     ; p: stringa, s: lista di stringhe
+    (if (null? s)
+        null
+        (cons (string-append p (car s))
+              (all-prefix p (cdr s))
+         )
+     )
+ ))
+
+; definisco all-longer a partire da longer
+(define all-longer    ; val: lista di stringhe
+  (lambda (s t)       ; s,t: liste di stringhe
+    (let ((m (string-length (car s)))
+          (n (string-length (car t)))
+          )
+      (cond ((< m n)
+             t)
+            ((> m n)
+             s)
+            (else
+             (append s t)
+             )
+         )
+     )  
+ ))
+
+
+
+;; Test di primalità
+;; definire se un numero n è primo
+
+(define primo? ; val: booleano
+  (lambda (n)  ; n >= 2 intero
+    (not (divisori-in? n 2 (- n 1)))
+    ; se non ha divisori, allora è primo.
+    ; se il secondo estremo sx < estremo dx allora Int.=vuoto
+  ))
+
+(define divisori-in?  ; val: booleano
+  (lambda (n a b)     ; n, a, b: interi positivi
+    (cond ((> a b)    ; estr.sx < estr.dx
+           false)
+          ((= (remainder n a) 0) ; resto 0, ha divisori.
+           true)
+          (else
+           (divisori-in? n (+ a 1) b)   ; int. più piccolo
+           )
+      )
+   ))
+
+
+
+;; Moltiplicazione "alla russa"
+(define molt-russa  ; intero
+  (lambda (m n)     ; m, n: interi positivi
+    (cond ((= n 0)
+          0)
+          ((even? n)
+           (molt-russa (* 2 m) (quotient n 2))) ; 2m * n/2 = m*n
+          (else
+           (+ m (molt-russa (* 2 m) (quotient n 2)))) ; 2m * (n-1)/2 = m*(n-1) = m*n-m
+     )
+  ))
+
+
+;; Moltiplicazione del contadino russo
+;; (molt-russa 7 9) -->  63
+(define molt-cont     ; intero
+  (lambda (m n)       ; m, n: interi positivi
+    (molt-rec m n 0)
+    ))
+
+
+(define molt-rec    ; intero
+  (lambda (m n p)   ; m, n, p: interi positivi
+    (cond ((= n 0)
+           p)
+          ((even? n)
+           (molt-rec (* 2 m) (quotient n 2) p))  ; 2m * n/2 = m*n
+          (else
+           (+ m (molt-rec (* 2 m) (quotient n 2) (+ m p)))) ; 2m * (n-1)/2 = m*(n-1) = m*n-m
+      )
+    ))
+
+
+
+
+;; Cyclic-pattern
+;; (cyclic-pt "abcabcabc" 3) --> "abc"
+
+(define cyclic-pt      ; val: stringhe
+  (lambda (s k)        ; s,k: ""
+    (let ((n (string-length s)))
+      (cond ((< n k)
+             "")
+            ((= n k)
+             s)
+            (else
+             (let ((p (cyclic-pt (substring s k) k)))  ; Taglia la stringa s eliminando i primi k caratteri
+               (if (string=? (substring s 0 k) p)
+                   p
+                   ""
+                )
+              )
+            )
+        )
+      )
+   ))
+
+  
