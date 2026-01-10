@@ -763,14 +763,34 @@ Caso finale: altrimenti restituisce #f.
 (define molt-rec    ; intero
   (lambda (m n p)   ; m, n, p: interi positivi
     (cond ((= n 0)
-           p)
+            p
+           )
           ((even? n)
-           (molt-rec (* 2 m) (quotient n 2) p))  ; 2m * n/2 = m*n
+           (molt-rec (* 2 m) (quotient n 2) p))            ; 2m * n/2 = m*n
           (else
-           (+ m (molt-rec (* 2 m) (quotient n 2) (+ m p)))) ; 2m * (n-1)/2 = m*(n-1) = m*n-m
+           (+ m (molt-rec (* 2 m) (quotient n 2) (+ m p))) ; 2m * (n-1)/2 = m*(n-1) = m*n-m
+           ) 
       )
     ))
 
+
+; Moltiplicazione russa tradotta in Imperativo
+"""
+int peasantMul(int m, int n) (
+    int p = 0;                // (mul-rec m n 0)
+
+    while (n > 0) (
+       if (n % 2 == 0) (     // n: pari
+         m = 2 * m;
+         n = n / 2;
+     ) else (                // n: dispari
+         p = m + p;
+         m = 2 * m;
+         n = n / 2;
+         
+    )
+)
+"""
 
 
 
@@ -796,4 +816,309 @@ Caso finale: altrimenti restituisce #f.
       )
    ))
 
-  
+
+; MCD - ricorsione di coda
+(define mcd
+  (lambda (x y)
+    (cond ((= x y)
+           x
+           )
+          ((< x y)
+           (mcd x (- y x))
+           )
+          (else
+           (mcd (- x y) y)
+           )
+      )
+ ))
+; L'iterazione inizia, con es: 2, 4. --> 2, 2. ---> si ferma nel caso base x=y
+
+; Programma iterativo equivalente
+"""
+int mcd(int x, int y) (
+  while (x != y) (
+     if (x < y) (
+       y = y - x;
+     )else (
+       x = x - y;
+     )
+   )
+   return x;
+)
+"""
+
+
+; Problema di fibonacci  (coppie conigli fertili)
+; F(i+2) = F(i) + F(i+1)   per i=>0
+; Casi base:
+; Casi ricorsivi:
+; 1 coppia t = 0
+; 2 coppia t = 1
+; 3 coppie t = 2
+; x coppie t = n
+; INPUT: (+ (coppie-frt 12) (coppie-cucc 12))  -OUTPUT->  377
+
+; INPUT: (+ (coppie-frt 2) (coppie-cucc 2))    -OUTPUT->  3
+; Perchè: 
+; 1 + 0 = 1   // 1* livello di ricorsione
+; 1 + 1 = 2   // 2* livello di ricorsione
+;       = 3   // tot
+
+; INPUT: (+ (coppie-frt 3) (coppie-cucc 3))
+; 2 + 1 = 3   // 1* livello di ricorsione
+; 1 + 0 = 1   // 2* livello di ricorsione
+; 1 + 0 = 1   // 3* livello di ricorsione
+;       = 5   // tot
+
+(define coppie-frt      ; val: interi+
+  (lambda (s)            ; s: interi+
+    (if (= s 0)
+         1
+         (+ (coppie-frt (- s 1)) (coppie-cucc (- s 1)))
+      )
+ ))
+
+(define coppie-cucc
+  (lambda (s)
+    (if (= s 0)
+        0
+        (coppie-frt (- s 1))
+     )
+ ))
+
+
+
+; Criptazione (Procedura con argomenti procedurali)
+(define encrypt        ; val: stringa
+  (lambda (msg rule)   ; msg: stringa, rule: procedure [caratt->caratt]
+    (if (string=? msg "")
+         ""
+        (string-append
+          (string (rule (string-ref msg 0)))
+          (encrypt (substring msg 1) rule)
+         )
+     )
+  ))
+; (encrypt "PROGRAMMAZIONE" (lambda (c) c)) --> "PROGRAMMAZIONE"
+; (encrypt "PROGRAMMAZIONE" char-downcase) --> "programmazione"
+; (encrypt "PROGRAMMAZIONE" (lambda (c) (integer->char (+ (char->integer c) 1)))) --> "QSPHSBNNB[JPOF"
+
+
+
+; Algoritmo di Cesare vers. 1 (Mir0l0)
+(define ascii-Z (char->integer #\Z))
+(define caesar-cipher-3     ; val: char (lettera maiuscola)
+  (lambda (c)               ; c: char (lettera maiuscola)
+    (let ((k (+ (char->integer c) 3))
+          )
+      (if (> k ascii-Z)
+          (integer->char (- k 26))
+          (integer->char k)
+       )
+      )
+  ))
+
+; Aumenta di 3 la rotazione del carattere.  (M0nic4)
+(define aA (char->integer #\A))  ; costanti
+(define aZ (char->integer #\Z))
+(define n-car 26)
+
+(define rgl-cesare  ; val: char (lettera maiuscola)
+  (lambda (crt)     ; crt: char (lettera maiuscola)
+    (let ((new-ascii (+ 3 (char->integer crt)))
+          )
+      (if (<= new-ascii aZ)
+          (integer->char new-ascii)
+          (integer->char (- new-ascii n-car))
+          )
+      )
+   ))
+; (rgl-cesare #\M) --> #\P
+
+; Algoritmo "Encrypt" unito a quello di Cesare:
+; (encrypt "ALEAIACTAEST" caesar-cipher-3) --> "DOHDLDFWDHVW"
+
+
+(define caesar-cipher
+  (lambda (rot)
+    (lambda (c)
+      (let ((k (+ (char->integer c) rot))
+            )
+        (if (> k ascii-Z)
+            (integer->char (- k 26))
+            (integer->char k)
+         )
+       )
+      )
+   ))
+
+
+; Procedure con argomenti e valori procedurali
+(define caesar-undoer
+  (lambda (rule)
+    (let ((rot (- (char->integer (rule #\A)) ascii-A))
+          )
+        (caesar-cipher (- 26 rot))
+      )
+  ))
+
+; input: (define enc (caesar-cipher 3))
+; input: (define dec (caesar-undoer enc))
+; (encrypt "ALEAIACTAEST" enc) --> "DOHDLDFWDHVW"    //criptazione
+; (encrypt "DOHDLDFWDHVW" dec) --> "ALEAIACTAEST"    //decriptazione
+
+
+
+; Esempio
+; voglio una procedura che riesce a "tornare indietro" rispetto a qualsiasi criptazione di messaggi.
+(define perm-undoer   ; val: procedura [caratt --> caratt]
+  (lambda (rule)      ; rule: procedura [caratt --> caratt]
+
+    (lambda (c)
+      (invert c rule 0)
+      )
+    
+ ))
+
+(define invert        ; val: 
+  (lambda (c rule k)  ; c: car, rule: [caratt-->caratt], k: posizione.
+    (if (char=? (rule (integer->char k)) c)
+        (integer->char k)
+        (invert c rule (+ k 1))
+     )
+  ))
+
+
+; comando con argomenti procedurali:
+; ==> map <==
+; esempi:
+; (map (lambda (x) (+ x 1)) '(1 2 3 4 5)) --> (list 2 3 4 5 6)
+; (map char-downcase '(#\A #\B #\C))      --> (list #\a #\b #\c)
+; (map integer->char '(48 49 50 51))      --> (list #\0 #\1 #\2 #\3)
+
+;; Procedura predefinita map fatta "a mano"
+(define mappa
+  (lambda (f s)
+    (if (null? s)
+        null
+        (cons (f (car s)) (mappa f (cdr s)))    ; primo elemento + tutto il resto
+     )
+  ))
+
+; espansione:
+;  (cons (f 1) (mappa f '(2 3)))
+;  (cons 2     (cons (f 2) (mappa f '(3))))
+;  (cons 2     (cons 4     (cons (f 3) (mappa f '()))))
+;  (cons 2     (cons 4     (cons 6     '())))
+
+; (map char-downcase '(#\A #\B #\C))   --> (list #\a #\b #\c)
+; (mappa char-downcase '(#\A #\B #\C)) --> (list #\a #\b #\c)
+
+
+
+; map applicato ad all-lcs:
+; (all-lcs-2 "arto" "atrio") --> (list "ato" "aro" "aro")  //problema ripetizione
+; (all-lcs-2 "saltimbanco" "emblematico") --> (list "mbaco" "mbaco" "mbaco" "mbaco" "mbaco" "mbaco" "mbaco" "mbaco" "mbaco" "mbaco" "mbaco" "mbaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "ltico" "mbaco" "mbaco" "mbaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "ltico" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "ltico" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "ltico" "atico" "mbaco" "mbaco" "mbaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "ltico" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "ltico" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "ltico" "atico" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "ltico" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "ltico" "atico" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "lmaco" "ltico" "atico" "atico" "atico" "atico")
+
+(define all-lcs-2                                ; val: lista di stringhe
+  (lambda (u v)                                  ; u,v: stringhe
+    (cond ((or (string=? u "") (string=? v ""))  ; caso base: entrambe vuote
+            (list "")
+           )
+          ((char=? (string-ref u 0) (string-ref v 0))   ; 1* carattere uguale per entrambe
+           ;(all-prefix (substring u 0 1)
+           (map (lambda (x) (string-append (substring u 0 1) x))
+                (all-lcs-2 (substring u 1) (substring v 1))
+                )
+            )
+          (else
+           (all-longer-2                                  ; altrimenti iniziano con caratteri
+                    (all-lcs-2 (substring u 1) v)         ; diversi e prendo la più lunga comune.
+                    (all-lcs-2 u (substring v 1))
+            )
+          )
+      )
+ ))
+
+; definisco all-longer con la procedura "merge" per risolvere il problema delle ripetizioni.
+; definisco all-longer a partire da longer
+(define all-longer-2    ; val: lista di stringhe
+  (lambda (s t)       ; s,t: liste di stringhe
+    (let ((m (string-length (car s)))
+          (n (string-length (car t)))
+          )
+      (cond ((< m n)
+             t)
+            ((> m n)
+             s)
+            (else
+             ;(append s t)
+              (merge-2 s t)
+             )
+         )
+     )  
+ ))
+
+(define merge-2     ; val: lista di stringhe senza ripetizioni
+  (lambda (s t)   ; s,t: lista di stringhe senza ripetizioni
+    (if (null? s)
+        t
+        (cons (car s) (merge-2 (cdr s) (remove (car s) t)))   ; remove: rimuove un specifico elemento da t.
+     )
+ ))
+
+; (remove 3'(1 2 3 4 5)) --> (list 1 2 4 5)
+; riprovo all-lcs-2 (senza ripetizioni)
+; (all-lcs-2 "saltimbanco" "emblematico") --> (list "mbaco" "lmaco" "ltico" "atico")    ; funziona!
+
+
+
+; Funzioni di ordine superiore --> Composizione di funzioni
+; [f:D -> E, g:E -> F] ==> gof(x)= g(f(x)) per ogni x app. a D.
+
+(define comp      ; val: procedura  [D -> F]
+  (lambda (g f)   ; f:D -> E, g:E -> F  (procedure)
+    (lambda (x) (g (f x)))
+ ))
+
+; Esempio: 
+; (define incr-1 (lambda (x) (+ x 1)))
+; (define double (lambda (x) (* x 2)))
+; (define h (comp incr-1 double))
+; (h 5) --> 11
+; che è lo stesso che fare: ((comp (lambda (x) (+ 1 x)) (lambda (x) (* 2 x))) 5)
+
+
+
+; Iterata di una funzione: f:D->D  con i app. a N (n naturali) t.c.
+; f^i (x) =
+; x            se i = 0
+; f(f^i-1 (x)) se i > 0
+
+(define iter
+  (lambda (f i)   ; f:D -> D (procedura), i: intero+
+    (lambda (x)
+      (if (= i 0)
+          x
+          (f ((iter f (- i 1)) x))
+       )
+     )
+ ))
+
+(define q
+  (lambda (x)
+    (+ 1 (/ 1 x))
+ ))
+
+((iter q 0) 1)
+((iter q 1) 1)
+((iter q 2) 1)
+((iter q 3) 1)
+((iter q 4) 1)
+((iter q 5) 1)
+((iter q 6) 1)
+((iter q 10) 1)
+((iter q 20) 1)
+((iter q 30) 1)
+((iter q 40) 1)
+; converge alla sezione aurea (numero irrazionale) --> (/ (+ 1 (sqrt 5)) 2)
