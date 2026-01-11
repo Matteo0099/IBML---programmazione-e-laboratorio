@@ -1094,16 +1094,23 @@ int mcd(int x, int y) (
 ; f^i (x) =
 ; x            se i = 0
 ; f(f^i-1 (x)) se i > 0
+; dentro iter i due pezzi equivalgono
 
 (define iter
-  (lambda (f i)   ; f:D -> D (procedura), i: intero+
-    (lambda (x)
-      (if (= i 0)
-          x
-          (f ((iter f (- i 1)) x))
+ (lambda (f i)   ; f:D -> D (procedura), i: intero+
+;   (lambda (x)
+;      (if (= i 0)
+;          x
+;          (f ((iter f (- i 1)) x))
+;       )
+;     )
+   (if (= i 0)
+       id                         ; lambda: procedura
+       (comp f (iter f (- i 1)))  ; compongo f con l'iterata f^i-1
        )
-     )
  ))
+
+(define id (lambda (x) x))
 
 (define q
   (lambda (x)
@@ -1121,4 +1128,157 @@ int mcd(int x, int y) (
 ((iter q 20) 1)
 ((iter q 30) 1)
 ((iter q 40) 1)
-; converge alla sezione aurea (numero irrazionale) --> (/ (+ 1 (sqrt 5)) 2)
+((iter q 100) 1) ; si stabilizza l'approssimazione(aspetto matematico)
+; converge alla sezione aurea (numero irrazionale) --> (/ (+ 1 (sqrt 5)) 2) = 1.5(periodico)
+
+
+
+; Funzione polinomiale P(x) = c0 + c1*x^1 +...+ ck*x^k = sommatoria da i=0 a k (ci*x^i)
+; P(x) definita in:
+;  - c0          se k = 0
+;  - c0 + x*Q(x) se k > 0
+; Con Q(x) = c0 + c1*x^1 +...+ ck*x^k = sommatoria da i=1 a k (ci*x^i-1)
+
+(define P                                   ; val: intero+
+  (lambda (c k)                             ; c,k: lista, intero+
+    (cond ((null? c)                        ; caso base(1)
+           0   
+          )
+         (else
+           (+ (car c) (* k (Q (cdr c) k)))  ; caso ricorsivo(2)
+          ; c1 + x * Q(x) 
+          )
+      )
+  ))
+
+(define Q
+  (lambda (c k)
+    (cond ((null? c)
+           0
+           )
+          (else
+            (+ (car c) (* k (Q (cdr c) k)))
+           )
+      )
+  ))
+
+; Esempio input:
+; P(x) = 3x^2 + 2x + 1
+; (P '(1 2 3) 2)  --> 17    // viene messo il 2 al posto della x in f(x) e viene calcolato. 
+
+
+
+; Calcolo x^2 e 2i-1 (Proprietà da dimostrare, per induzione)
+(define unknown   ; val: intero       x^2
+  (lambda (x)     ; x: intero+
+    (if (= x 0)
+        0
+        (+ (unknown (- x 1)) (odd x))
+      )
+  ))
+
+(define odd       ; val: intero       2i-1
+  (lambda (i)     ; x: intero+
+    (if (= i 1)
+        1
+        (+ (odd (- i 1)) 2)
+      )
+  ))
+
+
+; Esempio dimostrazione:
+;
+; Vn app.a N   (odd n) -*-> 2n-1
+; caso base: (odd 1) -> 2*1-1 = 1
+; ip. ind. : (odd k) -> 2*k-1
+; pass.ind.: (odd k+1) -> 2(k+1)-1 = 2k+1
+;
+; valutazione programma:
+; (odd k+1) -> (if (= k+1 1) 1
+;                  (+ (odd (- k+1 1)) 2))
+; (+ (odd (- k+1 1)) 2)
+; (+ (odd k) 2) -*-> (+ 2k-1 2)
+; --> 2k+1
+;
+; R) La dimostrazione si è conclusa con la verifica della proprietà 2n-1
+
+
+; Sintassi da usare:
+; --> numero finito di passi
+; -*-> numero indeterminato di passi
+
+
+; Proprietà generale da dimostrare: Vn app.aN (unknown n) -> n^2
+; caso base: (unknown 0) -*-> 0^2 = 0
+;            (unknown 0) -*-> (if (= 0 0) 0 ...) --> 0
+; ipo. ind.: (unknown n) -*-> n^2   (assumo che...)
+; pass. ind: (unknown n+1) -*-> (n+1)^2
+; dim. ind.: (unknown n+1) --> (if (= n+1 0) 0 (+ ...))
+;       -->  (+ (unknown (- n+1 1))
+;               (odd n+1))
+;       -->  (+ (unknown n) (odd n+1))
+; per l'ipotesi induttiva: (+ n^2 (odd n+1))
+; per la proprietà dimostrata:
+;       --> (+ n^2 2n+1)
+;       --> (n^2+2n+1) = (n+1)^2     // quadrato di binomio --> vale n e per n+1 ovvero Vn.
+
+
+; Ricorsione -> delega  (top-down)  ==> simile a induzione n+1
+
+
+; Funzione potenza x^y
+(define power    ; val: intero
+  (lambda (m n)  ; x > 0, y: interi+
+    (if (= n 0)
+        1
+        (* m (power m (- n 1)))
+     )
+ ))
+
+; Dimostrazione per ind. formale:
+; 2 argomenti, m,n > 0 con n app.aN -> m^n
+; casi base: (power m 0) -> m^0 = 1
+;  m app. [1,2,3,...] e n=0: (power m n) -> m^n (*)
+; dim. p.in: (power m n+1) -> m^n+1
+;  m app. [1,2,3,...] e n=k+1: (power m n) -> m^n (*)
+;            (power m n+1)
+;        --> (if (= n+1 0) 1 (* m ...))
+;        --> (... ...)
+
+
+; ------------------------------------------------------------------
+; Dimostrazione su mul-tr (tail-recursive)
+; Per ogni m,n,p app.a N  (mul-tr m n p) -> mn+p
+; induzione su...? --> n+1
+; ipotesi: (mul-tr m 0 p) -*-> p
+; ipotesi induttiva: considero n app.a N  (mul-tr m n p) -> mn+p
+; proprietà da dimostrare come passo induttivo:
+; Vm,p app.a N ==> (mul-tr m n+1 p) -*-> m(n+1)+p
+; dim. casi base: 
+; ------------------------------------------------------------------
+; a) n+1 pari
+; (cond ((even? n+1) ...) ...)
+; (mul-tr (* 2 m)
+;         (quotient n+1 2) p)
+; (mul-tr 2m (n+1) / 2 p)
+; siccome 2m e p sono naturali e (n+1)/2 app.a [0,n], posso applicare l'ipotesi induttiva:
+; 2m (n+1) / 2 + p = [m(n+1) + p]
+; ------------------------------------------------------------------
+; b) n+1 dispari
+; (cond (else ...)
+; (mul-tr (* 2 m)
+;         (quotient n+1 2)
+;         (+ m p))
+; (mul-tr 2m n/2 m+p)
+; [(quotient n+1 2) -> n/2 poiché n+1 dispari]
+; siccome 2m e m+p sono naturali e n/2 app.a [0,n], posso applicare l'ipotesi induttiva:
+; --> 2m n/2 + m + p = mn + m + p = [m(n+1) + p]
+; CVD
+; ------------------------------------------------------------------
+
+
+
+
+
+
+
