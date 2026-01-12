@@ -346,7 +346,7 @@ Caso finale: altrimenti restituisce #f.
   ))
 
 
-; Problema di Manhattan (i,j-1) o (i-1, j)
+; Problema di Manhattan (i,j-1) o (i-1, j)  ---- Ricorsione ad Albero != Ricorsione di coda
 ; (paths 5 5) -> 252 totali combinazioni di strade
 (define paths   ; val: intero
   (lambda (i j) ; i,j: interi non negativi
@@ -391,9 +391,9 @@ Caso finale: altrimenti restituisce #f.
   ))
 
 
-; Numeri di Stirling del II tipo
+; Numeri di Stirling del II tipo  (pasticcini sui piatti -- 6 pasticcini su 3 piatti)
 (define stirling       ; val: intero
-  (lambda (n k)  ; [1 <= k <= n] interi
+  (lambda (n k)        ; [1 <= k <= n] interi
     (if (or (= k 1)(= k n))
         1
         ;   15 + (3 * 25) = 90 modi per 6 pasticcini in 3 piatti
@@ -1278,7 +1278,82 @@ int mcd(int x, int y) (
 
 
 
+; Dimostrazione: percorsi di Manhattan
+; (paths i j) --> ?
+; Dobbiamo fare l'ipotesi induttiva su AMBO i parametri (non si può escludere 1 dei 2).
+; NB: i casi base della ricorsione possono NON essere i casi base dell'induzione.
+;
+; (paths i j) --> (i+j)! / (i! * j!)  --> [(i-1)+(j-1)] * [(i-2)+(j-2) * ... * (i-n)+(j-n)]   --> [calcolo combinatorio]
+; k = i+j --> "Misura di difficoltà"  k app.a N, m,napp.aN t.c (m + n = k) 
+; Proprietà generale da dimostrare:
+;   Vk app.a N Vm,n app.a N t.c (m + n = k)
+;   (paths m n) -*-> (m+n)! / (m! * n!)
+; Caso base: k = 0  ==> (paths 0 0) -*-> (0+0)! / (0! * 0!) = 1  [ok]   ---   [0! = 1]
+; Ipotesi induttiva: considero k app.a N e assumo che:
+;   Vk app.a N Vm,n app.a N t.c (m + n = k) vale: (paths m n) -*-> (m+n)! / (m! * n!)
+; Dimostraz. passo induttivo:
+;   Vk app.a N Vm,n app.a N t.c (m + n = k + 1)
+;   (paths m n) -*-> (m+n)! / (m! * n!)
+;   
+;   (paths m n)
+;     --> (if (or (= n 0) (= m 0)) ...)
+;    a) suppongo n = 0
+;     --> 1 = (m+0)! / (m! * 0!)  [ok]
+;    b) suppongo m = 0
+;     --> 1 = (0+n)! / (0! * n!)  [ok]
+;    c) suppongo m,n > 0                  ; tanti passaggi quante sono le ricorsioni.
+;     --> (+ (paths m (- n 1))
+;            (paths (- m 1) n))
+;     --> (+ (paths m n-1)         [m+n-1 = k]-> rientro nell'ipotesi induttiva
+;            (paths (- m 1) n))
+;     --> (+ (m+n-1)! / (m!*(n-1)!)
+;            (paths (- m 1) n))    [m-1+n = k]-> rientro nell'ipotesi induttiva
+;     --> (+ (m+n-1)! / (m!(n-1)!)
+;            (m-1+n)! / ((m-1)!*n!))
+;       = (m+n-1)! / (m!(n-1)!) + (m-1+n)! / ((m-1)!*n!))
+;       = (m+n-1)!*(n+m) / (m!*n!)
+;       = (m+n)! / (m!*n!)   [ok]
+;     
+; Conclusione: Seguire lo schema generale dell'induzione, seguendo le ricorsioni del programma (albero/di coda).
 
 
+
+
+; Dimostrazione problema di Stirling (pasticcini)
+; Proprietà per n=>2 Vn app.a N ==> (st n 2) -*-> [2^n-1 - 1]
+; Proprietà per n=>2 Vn app.a N ==> (st n n-1) -*-> [n(n-1) / 2]
+;  a)-caso base:
+;     (st 2 2) --> 2^2-1 - 1 = 1
+;    -ipotesi induttiva: considero n app.a N tolto [0,1] e assumo che.
+;     (st n 2) --> 2^n-1 - 1
+;    -passo induttivo: per n considerato
+;     (st n+1 2) ---> 2^(n+1)-1 - 1 = 2^n - 1
+;     (st n+1 2)
+;      ---> (+ (st (- n+1 1) (- 2 1))
+;              (* 2 (st (- n+1 1) 2)))
+;      ---> (+ (st n 1)
+;              (* 2 (st (- n+1 1) 2)))
+;      ---> (+ 1 (* 2 (st n 2)))
+;      ---> (+ 1 (* 2 2^n-1 - 1)) --> 2^n - 1
+;  b) -caso base: 
+;      (st 2 2-1) --> 2(2-1) / 2 = 1
+;     -ipotesi induttiva: considero n app.a N tolto [0,1] e assumo che:
+;      (st n n-1) --> n(n-1) / 2
+;     -passo induttivo: per n considrato
+;      (st n+1 n+1-1) --> (n+1)*n / 2
+;      (st n+1 n) 
+;       → (+ (st (- n+1 1) (- n 1))
+;            (* n (st (- n+1 1) n)))
+;       → (+ (st n n-1)
+;            (* n (st (- n+1 1) n)))
+;       → (+ n(n-1)/2 (* n (st n n)))
+;       → (+ n(n-1)/2 n)
+;       → (n+1)n/2
+
+
+
+; Dimostrazione per induzione programma "UFO" --> Unified Flying Procedure.
+; (ufo n) --> ??
+; 
 
 
