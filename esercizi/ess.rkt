@@ -1492,18 +1492,21 @@ int mcd(int x, int y) (
 ; (p list null null 5)          —> ( () ()  (() ())  (() (()))  ((() ()) (() (() ()))) )
 ;
 
-(define doit          ; val: lista
+(define p             ; val: lista
   (lambda (f x y k)   ; f=funzione, x=el, y=el, k=intero+
-    (cond ((> k 0)
-           x)
-          ((> k 1)
-           y)
-          (else
-           (list
-             (* (f (doit f x y k) k))
-            )
+    (cond ((= k 0)
+            null
            )
-      )
+          ((= k 1)
+            (list x)
+           )
+          ((= k 2)
+            (list x y)
+           )
+          (else
+            (cons x (p f y (f x y) (- k 1)))   ; applico f ad (x,y) e poi abbasso k di 1 ogni volta.
+           )
+       )
   ))
 
 
