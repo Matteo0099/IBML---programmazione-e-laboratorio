@@ -1351,9 +1351,163 @@ int mcd(int x, int y) (
 ;       → (n+1)n/2
 
 
+; In caso vogliamo confutare una tesi, BISOGNA trovare un controesempio.
+
 
 ; Dimostrazione per induzione programma "UFO" --> Unified Flying Procedure.
+; ufo(n) restituisce il massimo numero dispari ≤ n
+; Quoziente = risultato tra Dividendo : divisore
+"""
+(define ufo            ; valore: ?
+  (lambda (x)          ; x > 0 naturale
+    (cond ((= x 1) 1)
+          ((even? x)   ; x pari
+           (- (* 2 (ufo (quotient x 2))) 1))   ; se pari +1
+          (else        ; o no... (x dispari)
+           (+ (* 2 (ufo (quotient x 2))) 1))   ; se dispari -1
+      )
+  ))
+
+"""
 ; (ufo n) --> ??
-; 
+; -Proprietà della funzione f calcolata dalla procedura ufo:
+; -(ufo n) --> f(n) con n app.a N+
+; a) Se n dispari:  Vn app.a N t.c. (ufo n) --> 2f(n)+1
+; b) f(n) <= n
+; c) f(0) = 1  e  f(n) = f(n-1)+2 se n non è una potenza di 2.  es n=6 (pari) ==> f(5)+2 = 11 (dispari)
+; [V k >= 0]
+; d) f(2^k) = 1    
+; e) f(2^k+1 - 1) = 2^k+1 - 1
+;
+; -d)Proprietà generale da dimostrare: [con n=2^k] Vk app.a N  (ufo 2^k) -*-> 1
+; -caso base: (ufo 2^0) -*-> 1
+; -ipotesi induttiva: considero k app.a N
+;  assumo che: (ufo 2^k) -*-> 1    (!!!senza quantificazione, ovvero [k app.a N])
+; -dimostro il passo induttivo: per k considerato dimostro:
+;  (ufo 2^k+1) -*-> 1
+; -dimostro il passo induttivo:
+;  (cond ((even? k+1) ...) ...)    !!!sicuramente pari
+;   --> (- (* 2 (ufo (quotient 2^k+1 2))) 1))       
+;   --> (- (* 2 (ufo (quotient 2^k))) 1)    --> vorrei applicare l'ipotesi induttiva: 2^k -*->1
+;   --> (- (* 2 1) 1)  //per l'ipotesi induttiva
+;   --> (- 2 1) = 1
+;
+; -e)Proprietà generale da dimostrare: [n = 2^k+1 - 1]: Vk app.a N  (ufo 2^k+1 - 1) -*-> 2^k+1 - 1
+; -
+; -
+; -
+; -
+; -
+; -
+; -
+;
+;  - proprieta' generale (comprende tutte le precedenti):
+;            ogni k >= 0 : ogni j in [0,2^k-1] : (ufo 2^k+j) -*-> 2j+1
+;          dove i valori k, j sono numeri naturali
+;        - impostazione di riferimento:
+;            k     j                           n = 2^k+j
+;            0     [0]                         [1]
+;            1     [0, 1]                      [2, 3]
+;            2     [0, 1, 2, 3]                [4, 5, 6, 7]
+;            3     [0, 1, 2,  ...,  6,  7]     [8, 9, 10, ..., 14, 15]
+;            4     [0, 1, 2,  ..., 14, 15]     [16, 17,   ..., 30, 31]
+;            ...   ...                         ...
+;
+;            k     n = 2^k+j                   2j+1  (nell'ordine)
+;            0     [1]                         [1]
+;            1     [2, 3]                      [1, 3]
+;            2     [4, 5, 6, 7]                [1, 3, 5, 7]
+;            3     [8, 9, 10, ..., 14, 15]     [1, 3, 5,  ..., 13, 15]
+;            4     [16, 17,   ..., 30, 31]     [1, 3, 5,  ..., 29, 31]
+;            ...   ...                         ...
+;
+;  2.2. Dimostrazione per induzione su k, nei naturali:
+;
+;       - casi base: ogni j in [0,2^0-1] : (ufo 2^0+j) -*-> 2j+1
+;           (ufo 2^0+0)
+;             -*-> (cond ((= 1 1) 1) ... )
+;             -*-> 1 = 2j+1  perche' j = 0  (unico valore in [0,2^0-1] = [0,0])
+;       - ipotesi induttiva, preso un valore naturale k:
+;           ogni j in [0,2^k-1] : (ufo 2^k+j) -*-> 2j+1
+
+;       - passo induttivo, per k scelto sopra e per ogni j in [0,2^(k+1)-1]:
+;           (ufo 2^(k+1)+j)
+;             -*-> (cond ((= 2^(k+1)+j 1) 1) ((even? 2^(k+1)+j) ... ) (else ... ))
+;             -*-> (cond (false 1) ((even? 2^(k+1)+j) ... ) (else ... ))
+;             -*-> ?
+;   ---- sottocaso (a): 2^(k+1)+j pari,
+;         da cui consegue j pari (anche 2^(k+1) e' pari) e inoltre j <= 2^(k+1)-2
+;             -*-> (- (* 2 (ufo (quotient 2^(k+1)+j 2))) 1)
+;             ---> (- (* 2 (ufo 2^k+(j/2))) 1)      ; poiche' k+1 > 0 e j pari
+;             -*-> (- (* 2 (2(j/2)+1)) 1)           ; per l'ipotesi induttiva,
+;              infatti j/2 in [0,2^k-1] poiche' j <= 2^(k+1)-2
+;             ---> (- 2(j+1) 1)
+;             ---> 2(j+1) - 1 = 2j+1   [ok]
+;
+;   ---- sottocaso (b): 2^(k+1)+j dispari
+;         da cui consegue j dispari (2^(k+1) e' pari)
+;             -*-> (+ (* 2 (ufo (quotient 2^(k+1)+j 2))) 1)
+;             ---> (+ (* 2 (ufo 2^k+((j-1)/2))) 1)  ; poiche' k+1 > 0 e j dispari
+;             -*-> (+ (* 2 (2((j-1)/2)+1)) 1)       ; per l'ipotesi induttiva,
+;               infatti (j-1)/2 in [0,2^k-1] poiche' 1 <= j <= 2^(k+1)-1
+;              ---> (+ 2((j-1)+1) 1)
+;              ---> (+ 2j 1) = 2j+1   [ok]
+;
+; Note a margine.
+;  3.1. Formula chiusa per il valore f(n) restituito dalla
+;      procedura "ufo" applicata all'argomento intero n > 0:
+;
+;       - n = 2^k + j,  dove  k = floor( log n )  e  j = n - 2^floor( log n )
+;       - f( n ) = 2 ( n - 2^floor(log n) ) + 1      [log in base 2]
+;
+; Vederla come in chiave del programma complemento bit a 1:
+;  n - compl_a_1(n) =
+;  n-((2^k+1 - 1) - n) =
+;  2n - 2^k+1 + 1 =
+;  2(n-2^k) + 1 =  2j+1  [ok]
+
+
+
+
+
+; ------------ fine 1 parte corso ---------------- ;
+; Esercizi basati su temi d'esame ;
+; ------------------------------------------------ ;
+
+
+; :) Prova del 21 gen 2025 - 1 p. acc.
+;
+; 1 Esercizio
+; f:DxD -> D  x,y app.a D e intero k>=0
+; p = lista di k elementi di D
+; Casi base:
+;  x se k>0
+;  y se k>1
+;  else ==> (k>2) ==> risultante di f applicata ai due precedenti
+; es: (p f x y k) --> (e1,e2,e3,...,ek) dove e1 = x, e2 = y, ei=f(ei-2, ei-1) per i>2
+;
+; esempi
+; (p + 1 2 12)                  —> (1 2 3 5 8 13 21 34 55 89 144 233)
+; (p string-append "q" "b" 6)   —> ("q" "b" "qb" "bqb" "qbbqb" "bqbqbbqb")
+; (p list null null 5)          —> ( () ()  (() ())  (() (()))  ((() ()) (() (() ()))) )
+;
+
+(define doit          ; val: lista
+  (lambda (f x y k)   ; f=funzione, x=el, y=el, k=intero+
+    (cond ((> k 0)
+           x)
+          ((> k 1)
+           y)
+          (else
+           (list
+             (* (f (doit f x y k) k))
+            )
+           )
+      )
+  ))
+
+
+
+
 
 
