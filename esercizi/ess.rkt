@@ -1511,6 +1511,51 @@ int mcd(int x, int y) (
 
 
 
+; es.2) [DA COMPLETARE] Variante problema "sottosequenza comune più lunga (LCS)"
+; risultato è una coppia di liste di interi (lcps u v) --> (p q) 
+; esempio input:
+; (lcps "atrio" "arto")               --> ((1 2 5) (1 3 4))
+; (lcps "AGACTGAACATAC" GATCCGACTAC") --> ((2 3 4 6 7 9 11 12 13) (1 2 4 6 7 8 9 10 11))
 
+(define lcps        ; val: coppie liste interi+
+  (lambda (u v)     ; u,v: stringhe
+    (rec-proc 1 u 1 v)
+    ))
+
+(define rec-proc
+  (lambda (i u j v)  ; i,j => 0 indici interi; u,v: stringhe. 
+    (cond ((or (string=? u "") (string=? v ""))
+            (list '()'())
+           )
+          ((char=? (string-ref u 0) (string-ref v 0))
+           (let ((x (rec-proc (+ i 1) (substring u 1) (+ j 1) (substring v 1)))
+                 )
+                (list (cons i (car x)) (cons j (cadr x)))  ;(car (cdr x))
+            ))
+          (else
+           (let ((x (rec-proc (+ i 1) (substring u 1) j v))
+                 (y (rec-proc i u (+ 1 j) (substring v 1)))
+                 )
+             (if (> (length (car x)) (length (car y)))
+                  x
+                  y
+                 )
+           ))
+      )
+  ))
+
+; SPIEGAZIONE CAR / CDR
+; (rec-proc 2 "trio" 2 "rto") --> ((2 5) (3 4))
+; (car x)      : (2 5)
+; (cdr x)      : ((3 4))
+; (car (cdr x)): (3 4)
+
+
+
+
+; 3) Verifica formale della correttezza
+; funzione f, e tail-rec
+; V x,y,z app.a N (tail-rec x y z) ---> y + z(x+z-1) (*)
+; N = insieme numeri Naturali
 
 
