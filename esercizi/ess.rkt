@@ -1553,9 +1553,79 @@ int mcd(int x, int y) (
 
 
 
+
+; Programma tail-rec:
+(define f
+  (lambda (n)
+    (tail-rec 1 0 n)
+ ))
+
+(define tail-rec
+  (lambda (i j k)
+    (if (= k 0)
+        j
+        (tail-rec (+ i 2) (+ i j) (- k 1))
+      )
+  ))
+
 ; 3) Verifica formale della correttezza
 ; funzione f, e tail-rec
 ; V x,y,z app.a N (tail-rec x y z) ---> y + z(x+z-1) (*)
 ; N = insieme numeri Naturali
+
+; Casi base:
+; V x,y app.a N (tail-rec x y 0) --> y + 0 (x+0-1) = y
+
+; Ipotesi induttiva: consideriamo un certo z app.a N e assumiamo
+; V x,y app.a N (tail-rec x y z) --> y + z (x+z-1)
+
+; Passo induttivo: per z considerato e voglio dimostrare
+; V x,y app.a N (tail-rec x y z+1) --> y + (z+1) (x+z+1-1) = y + (z+1)(x+z)
+
+; [z considerato, V x,y app.a N]
+
+; (tail-rec x y z+1)
+;  --> (if (= z+1 0) ... ...)
+;  --> (if (= z+1 0) ... ...)
+;  --> (tail-rec x+2 x+y z)     //z è quello per cui ho fatto l'ipotesi induttiva****
+;  -->  x+y + z (x+2+z-1)
+;         = y + (z+1)(x+z) ?
+; y + xz + x + zz + z // x + y + xy + zz + z   -----------> sono gli stessi addendi
+; CVD (dimostrato)
+
+; Dimostra che V n app.a N (f n) -> n^2   [NO INDUZIONE]
+; (f n)
+; Caso base:  --> (tail-rec 1 0 n) --> 0 + n(1+n-1) --> n + nn - n --> n^2  [ok]
+
+
+
+; 4) Ultimo esercizio (argomenti e valori procedurali)  ---> no corpo funzione, ma semantica...
+; (p + 1 2 12)                  —> (1 2 3 5 8 13 21 34 55 89 144 233)
+; (p string-append "q" "b" 6)   —> ("q" "b" "qb" "bqb" "qbbqb" "bqbqbbqb")
+; (p list null null 5)          —> ( () ()  (() ())  (() (()))  ((() ()) (() (() ()))) )
+
+; a)  (p X X X 7) --> ("|" "|" "||" "|||" "|||||" "|||||||" "|||||||||" "|||||||||||" "|||||||||||||")  // numeri dispari 1,3,5...
+;     (p string-append "|" "|" 7)
+
+; b)  (p (lambda (x y) ) "abc" "bcd" 9) --> ("abc" "bcd" "cda" "dab" ...x9) --> GIUSTAPPOSIZIONE
+;     (p (lambda (u v) (string-append (substring v 1) (substring u 0 1))) "abc" "bcd" 9)
+;                                    (esclude il 1*c) (prendo il 1*c)
+
+; c)  (p X X X X) --> ((1 2 3 4) (5 6 7) (4 3 2 1) (7 6 5) (1 2 3 4) (5 6 7))
+;     (p (lambda (s t) (reverse s)) '(1 2 3 4) '(5 6 7) 6)  --> Reverse può avere 1 sola lista / el.
+
+; d)  (p () 103 24 10) -->  (24 103 24 7 3 1 0 0 0 0)    --> Attenzione alla divisione per 0.
+;     (p
+;       (lambda (x y)
+;         (if (or (= x 0) (= y 0))
+;           0 
+;           (remainder x y)
+;          )
+;        )
+;      24 103 10)
+;
+
+
+
 
 
