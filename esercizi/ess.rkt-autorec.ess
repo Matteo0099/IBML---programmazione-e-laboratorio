@@ -1702,122 +1702,12 @@ int mcd(int x, int y) (
 
 
 
-; es: dato n>0 con f:D->D e k app.a D, iter-seq restituisce una lista di n elementi di D, ciascuno dei quali
-;     risulta da una successiva iterazione dell'applicazione di f a partire da k - dove l'ultimo termine si
-;     intende che f è applicata n-1 volte:
-;
-; (iter-seq n f k) ---> (k (f(k) f(f(k)) f(f(f(k))) ... (f(f ...f(k)...)) )
-;
-; Partendo da k ogni ulteriore el. si ottiene applicando f a el-1
-;
-; (iter-seq 4 sqr 2) --> (2 4 16 256)
-; (iter-seq 4 cdr '(5 4 3 2 1)) --> ((5 4 3 2 1) (4 3 2 1) (3 2 1) (2 1))
-
-
-(define iter-seq    ; val: lista di n el.
-  (lambda (n f k)   ; n: intero, f: procedura, k: argomento procedura
-    (cond ((= n 1)
-           (list k)
-           )
-          (else
-           (cons k
-                 (iter-seq (- n 1) f (f k))
-                 )
-           )
-          )
-    ))
-
-
-
-; Argomenti a valori procedurali: 
-
-; (iter-seq 7 XXX XXX)                                 --> (1 3 9 27 81 243 729)
-; (iter-seq 7 (lambda (x) (* 3 x)) 1)                  --> (list 1 3 9 27 81 243 729)  
-
-; (iter-seq XXX XXX XXX)                               --> ((1 2 3 4) (2 3 4) (3 4) (4) ())
-; (iter-seq 5 cdr '(1 2 3 4))                               --> (list (list 1 2 3 4) (list 2 3 4) (list 3 4) (list 4) '())
-
-; (iter-seq 5 XXX XXX)                                      --> ("" "AB" "ABAB" "ABABAB" "ABABABABAB")
-; (iter-seq 5 (lambda (x) (string-append "AB" x)) "")       --> (list "" "AB" "ABAB" "ABABAB" "ABABABAB")
-
-; (iter-seq 4 XXX "E")                                      --> ("E" "(EE)" "((EE)(EE)" "(((EE)(EE))((EE)(EE)))" )
-; (iter-seq 4 (lambda (x) (string-append "(" x x ")")) "E") --> (list "E" "(EE)" "((EE)(EE))" "(((EE)(EE))((EE)(EE)))")
-
-
-; NB: < string-append > può avere più argomenti.
-; NB: nella concatenazione di liste i comandi più ricorrenti sono: < CONS > , < APPEND >. 
-
-
-
-
-; Esercizio 20 sett. 2024: f,g: D->D con x app.a D e int k>0
-; iter-alt restituisce lista di k el. di D, con successive applicaz. di f,g in
-; maniera alternata, a partire da x, e le funzioni vengono applicate k-1 volte.
-
-; (iter-alt f g x k)                                        --> (x f(x) g(f(x)) f(g(f(x))) g(f(g(f(x)))) ...)
-; (iter-alt cdr reverse '(1 2 3 4) 5)                     --> ((1 2 3 4) (2 3 4) (4 3 2) (3 2) (2 3))
-; (iter-alt (lambda (x) (+ x 1)) (lambda (x) (/ 1 x)) 1 10) --> 
-
-(define iter-alt
-  (lambda (f g x k)
-    (if (= k 1)
-        (list x)
-        (cons x (iter-alt g f (f x) (- k 1)))    ; inverto f e g, calcolo f(x) e scalo 1 da k.
-      )
-  ))
 
 
 
 
 
-; Argomenti procedurali in Scheme: lista ordinata s (int+) diversi tra loro, combinazioni di s senza ripetizioni,
-; per cui la somma degli elementi di s inclusi nella combinazione è esattamente uguale alla somma degli elementi
-; di s esclusi.
-
-; (comb '(1 3 5 7))         --> ((1 7) (3 5))    // perchè 3+5=7+1 = 8
-; (comb '(1 2 3 4 5))       --> ()
-; (comb '(1 2 3 5 7 11 13)) --> ((1 2 5 13) (1 2 7 11) (1 7 13) (2 3 5 11) (3 5 13) (3 7 11))
-
-(define comb
-  (lambda (s)
-    (comb-rec s 0 0)
-  ))
-
-(define comb-rec
-  (lambda (s x y)
-    (if (null? s)
-        (if (= x y) (list null) null)   ; coda: dove termina il programma.
-        (let ((e (car s)))
-          (append
-           ; mappa: add new el., (ultimo el, x+(primo el s), y)
-           (map
-            (lambda (x) (cons e x))
-            (comb-rec (cdr s) (+ x e) y)
-            )
-           ; append di somma con la seconda parte di lista.
-           (comb-rec (cdr s) x (+ y e)) 
-           ))
-        )
-    ))
 
 
 
 
-; Esercizio prova 21/01/22
-; Procedura: data stringa(s), e int(k)>0, cyclic-pattern restituisce:
-; a) la stringa p(pattern) di lunghezza k, se s è costituita dalla ripetizione ciclica di p 1+ volte
-; b) la stringa vuota altrimenti.
-; Nel caso a) le ripetizioni di p si intendono consecutive (senza caratteri estrenei) e complete ovvero non troncate.
-; 
-; (cyclic-pattern "" 3)           --> ""
-; (cyclic-pattern "abc" 3)        --> "abc"
-; (cyclic-pattern "abcabcabc" 3)  --> "abc"
-; (cyclic-pattern "abcabcab" 3)   --> ""
-; (cyclic-pattern "abcabcacb" 3)  --> ""
-; ((cyclic-pattern "abcabcabc" 2) --> ""
-
-    
-(define cyclic-pattern
-  (lambda (s k)
-    
- ))
