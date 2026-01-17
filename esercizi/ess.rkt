@@ -1817,7 +1817,83 @@ int mcd(int x, int y) (
 ; ((cyclic-pattern "abcabcabc" 2) --> ""
 
     
-(define cyclic-pattern
-  (lambda (s k)
-    
+(define cyclic-pattern   ; val: stringa
+  (lambda (s k)          ; s: stringa, k: intero+
+    (cond ((= k 0) "")
+          ((= (string-length s) k)  s) 
+          ((> (remainder (string-length s) k) 0) "")
+          ((string=? (substring s 0 k) (substring s k (* 2 k)))   ; < s 0 3, s 3 6 >
+           (cyclic-pattern (substring s k) k)
+           )
+          (else "")
+          )
+    ))
+
+
+; NB: (substring "abc" 2) --> "c"
+
+
+
+
+
+; Es  3. Argomenti Procedurali
+; percorsi di Manhattan diversi, costituiti da:
+; - i: spostamenti verticali
+; - j: spostamenti orizzontali
+; NB: non si possono fare più di k spostamenti orizzontali consecutivi.
+
+(define manh
+  (lambda (i j k)
+    (manh-rec i j k k)
+    ))
+
+(define manh-rec
+  (lambda (i j k v)
+    (cond ((= i 0)
+           (if (> j v) 0 1))
+          ((= j 0)
+           1)
+          ((= v 0)
+           (manh-rec (- i 1) j k k))
+          (else
+           (+
+            (manh-rec (- i 1) j k k)
+            (manh-rec i (- j 1) k (- v 1))
+            ))
+       )
+  ))
+
+
+; (paths 5 1 2) --> ("000001" "000010" "000100" "001000" "010000" "100000)
+; (paths 1 5 2) --> ()
+; (paths 2 2 1) --> ("0101" "1001" "1010")
+
+; Il programma dovrà restituire...
+
+(define paths-1
+  (lambda (i j k)
+    (paths-rec i j k k)
  ))
+
+(define paths-rec
+  (lambda (i j k v)
+    (cond ((= i 0)
+           XXX
+           )
+          ((= j 0)
+           (XXX (make-string i #\0)))
+          ((= v 0)
+           (map XXX
+                (paths-rec (- i 1) j k k)))
+          (else
+           (XXX
+            (map XXX
+                 (paths-rec (- i 1) j k k))
+            (map XXX
+                 (paths-rec i (- j 1) k (- v 1))))
+           )
+       )
+  ))
+          
+
+
