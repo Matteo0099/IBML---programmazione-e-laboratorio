@@ -1060,7 +1060,7 @@ int mcd(int x, int y) (
  ))
 
 (define merge-2     ; val: lista di stringhe senza ripetizioni
-  (lambda (s t)   ; s,t: lista di stringhe senza ripetizioni
+  (lambda (s t)     ; s,t: lista di stringhe senza ripetizioni
     (if (null? s)
         t
         (cons (car s) (merge-2 (cdr s) (remove (car s) t)))   ; remove: rimuove un specifico elemento da t.
@@ -1081,12 +1081,18 @@ int mcd(int x, int y) (
     (lambda (x) (g (f x)))
  ))
 
-; Esempio: 
+; Esempio 1: 
 ; (define incr-1 (lambda (x) (+ x 1)))
 ; (define double (lambda (x) (* x 2)))
 ; (define h (comp incr-1 double))
 ; (h 5) --> 11
 ; che è lo stesso che fare: ((comp (lambda (x) (+ 1 x)) (lambda (x) (* 2 x))) 5)
+
+; Esempio 2:
+; (define flor (lambda (x) (* x x)))
+; (define sum (lambda (x) (+ x x)))
+; (define gtr (comp flor sum))
+; (gtr 10) --> 400
 
 
 
@@ -1985,27 +1991,55 @@ int mcd(int x, int y) (
 
 
 ; Verifica formale della correttezza
-; (f t) --> 3*2^(k-2) + 1  (*)
-
+; (fh t) --> 3*2^(k-2) + 1  (*)
+; (fh "111") --> 7
 ; procedura:
-(define f    ; val: intero
+(define fh      ; val: intero
   (lambda (b)   ; b: stringa di 0/1 conclusa da 1
     (cond ((string=? b "1")
-            1)
+           1)
           ((char=? (string-ref b 0) #\0)
-            (- (* 2 (f (substring b 1))) 1))
+           (- (* 2 (fh (substring b 1))) 1))
           (else
-            (+ (* 2 (f (substring b 1))) 1))
+           (+ (* 2 (fh (substring b 1))) 1))
+          )
     )
   )
-)
 
 ; Dimostrazione per induzione della correttezza:
-; funzione da dim: (f t) --> 3*2^(k-2) + 1  (*)
+; funzione da dim: (fh t) --> 3*2^(k-2) + 1  (*)  al variare di K.
+
 ; Caso base (proprietà): 
+; (fh t) con k >= 3:
+; (fh "111") --> 3*2^(3-2) + 1 = 3*2 + 1 = 7  [ok]
 
+; Ipotesi induttiva:
+; Considero un k >= 3 intero, e assumo:
+; (fh "00...111") --> 3*2^(k-2) + 1
 
+; Proprietà da dimostrare come passo induttivo:
+; Considerato k = k+1
+; (fh "000...111") --> 3*2^(k-1) + 1
 
+; Dimostro il caso base e passo induttivo:
+;  Caso base: con lunghezza stringa k>=3 e k-3 cifre 0 --> se k=3 => cifre(0)=0 quindi tutti 1.
+;  (fh "111")
+;  --> (else (+ (* 2 (f (substring "111" 1))) 1)))
+;  --> (+ (* 2 (f "11")) 1)
+;  --> (+ (* 2 (+ (* 2 (f "1")) 1)) 1)
+;  --> (+ (* 2 (+ (* 2 1) 1)) 1)
+;  --> (+ (* 2 3) 1)
+;      = 7   [ok]
+
+;  Passo induttivo: considerato k = k+1
+;  (fh "000...111") --> 3*2^(k-1) + 1               // k=solo1, k+1=almeno1zero
+;  (cond ... ((char=? ...)))
+;   --> (- (* 2 (f (substring "000...111" 1))) 1)   // k+1
+;   --> (- (* 2 (f "00...111")) 1)                  // k ==> posso applicare l'ipotesi induttiva
+;   --> (- (* 2 (3*2^(k-2)+1)) 1)                   // applicato l'ipotesi ind. (verificato le condizioni)
+;   --> (- (3*2^k-1)+2) 1)
+;   --> (3*2^k-1 + 1)
+;   -->  = 3*2^k+1-2 + 1  [CVD per k = k+1]
 
 
 
@@ -2037,6 +2071,7 @@ int mcd(int x, int y) (
 
 
 
+
 ; data una funzione f definita per tutti gli argomenti interi e dato un intero s,
 ; restituisce la funzione g tale che g(x) = f(x–s). Per esempio, sulla base della
 ; definizione  (define h (shift (lambda(x) (* x x)) 3))  , devono risultare le seguenti valutazioni:
@@ -2050,5 +2085,103 @@ int mcd(int x, int y) (
   ))
 
 (define h (shf (lambda(x) (* x x)) 3))
+
+
+
+
+
+; Es. pr. scr. 22/09/2023
+; es.1
+; Date liste u,v la proc. restituisce la lista con u,v alternati, a partire
+; dal primo el. di u, seguito dal primo el. di v.
+;
+; (alternate-merge '(1 2 3 4 5 6 7) '("a" "b" "c" "d")) --> (1 "a" 2 "b" 3 "c" 4 "d" 5 6 7)
+; (alternate-merge '(1 2 3 4) '(#\a #\b #\c #\d #\e))   --> (1 #\a 2 #\b 3 #\c 4 #\d #\e)
+
+(define alternate-merge
+  (lambda (u v)
+    (cond ((null? u)
+           v
+           )
+          ((null? v)
+           u
+           )
+          (else
+           (cons (car u)
+                 (cons (car v)
+                       (alternate-merge (cdr u) (cdr v)))
+                 )
+           )
+          )
+    ))
+
+
+
+
+
+; es 3 - verifica formale della correttezza
+;
+(define fu
+  (lambda (x y)
+    (if (= x y)
+        (+ x y -1)
+        (let ((z (quotient (+ x y) 2)))
+          (+ (fu x z) (fu (+ z 1) y))
+          ))
+    ))
+
+; Dimostrare per ind:
+;  Ogni k in N. Ogni m,n in N+ t.c. n-m <= k.
+;  (f m n) --> n^2 - (m-1)^2
+
+; Caso base: per [0 < m <= n], e m=n:
+;  V m,n in N+ t.c. n-m <= 0    (f m n) --> n^2 - (m-1)^2  
+;  V n in N+ . (f n n) --> n^2 - (n-1)^2 = 2n-1             //perchè n=m
+
+; Ipotesi induttiva*: considero un k in N e assumo:
+;  V m,n in N+ t.c. n-m <= k    (f m n) --> n^2 - (m-1)^2 
+
+; Passo induttivo:  per k considerato
+;  V m,n in N+ t.c. n-m <= k+1  (f m n) --> n^2 - (m-1)^2 
+
+; Dimostrazione passo induttivo:   ***(non richiesto)***
+;  (f m n)
+;   --> ?     // spezzare la dim. in 2 parti
+; 
+;  a) m=n
+;   --> (+ n n -1) --> 2n-1 = n^2 - (n-1)^2
+;  b) m<n
+;   --> (let ((z (quotient (+ m n) 2))) (+ (fu m n) (fu (+ z 1) n)) )
+;   --> (let ((z (m+n)/2) (+ (fu m z) (fu (+ z 1) n)) )
+;   --> (+ (fu m [(m+n)/2]) (fu (+ [(m+n)/2] 1) n) )   
+;
+;   Se: [(m+n)/2] - m <= k   ...applico l'ipotesi induttiva*
+;   --> (+ [(m+n)/2]^2 - (m-1)^2 (f (+ [(m+n)/2] 1) n))
+;   --> (+ [(m+n)/2]^2 - (m-1)^2 (f [(m+n)/2]+1 n))
+;
+;   Se: n - [(m+n)/2] - 1 <= k
+;   --> (+ [(m+n)/2]^2-(m-1)^2  n^2-([(m+n)/2]+1-1)^2)
+;   -->    [(m+n)/2]^2-(m-1)^2 + n^2-([(m+n)/2]+1-1)^2
+;     = -(m-1)^2 + n^2 
+;                               vale per k >= 1                              vale per k >= 1
+;   m+n pari: [(m+n)/2] - m = [(n-m)/2 <= (k+1)/2 <= k]  /  n-[(m+n)/2]-1 = [(n-m)/2 - 1 <= (k+1)/2 - 1 <=k]
+;     
+;   m+n dispari: [(m+n)/2] - m = [(n-m-1)/2 <= k/2 <= k]  /  n-[(m+n-1)/2]-1 = [(n-m+1)/2 - 1 <= (k+2)/2 - 1 <=k] = [k/2 <= k]
+
+
+; Es: Completo la procedura sq, per calcolare il quadrato di un intero positivo
+"""
+(define sq
+  (lambda (n)
+    (f XXX XXX)
+    ))
+"""
+
+; (sq n) --> (f n y) --> x^2 - (y-1)^2 --> n^2
+; (sq n) --> (f n 1) --> n^2 - 0 --> n^2          // va bene per n app.aN+ e y!=0
+; [quindi per n app.a N+ e y!= 0]
+
+
+
 
 
