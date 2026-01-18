@@ -1864,36 +1864,191 @@ int mcd(int x, int y) (
   ))
 
 
-; (paths 5 1 2) --> ("000001" "000010" "000100" "001000" "010000" "100000)
-; (paths 1 5 2) --> ()
-; (paths 2 2 1) --> ("0101" "1001" "1010")
+; (paths-o 5 1 2) --> ("000001" "000010" "000100" "001000" "010000" "100000)
+; (paths-o 1 5 2) --> ()
+; (paths-o 2 2 1) --> ("0101" "1001" "1010")
 
-; Il programma dovrà restituire...
+; Il programma dovrà restituire una lista di percorsi "0/1..."
+; 0 (i) = spostamento verticale in basso   -  GIU'
+; 1 (j) = spostamento orizzontale a destra -  DX
 
-(define paths-1
+; make-string --> restituisce string con n ripetizioni di c.
+; (make-string n c) : n = intero, c = carattere.
+
+(define paths-o
   (lambda (i j k)
     (paths-rec i j k k)
  ))
 
 (define paths-rec
   (lambda (i j k v)
-    (cond ((= i 0)
-           XXX
+    ;      5 1 2 2
+    (cond ((= i 0)  ; solo spostamenti orizzontali
+           (if (> j v)
+               null
+               (list (make-string j #\1))
+               )
            )
-          ((= j 0)
-           (XXX (make-string i #\0)))
-          ((= v 0)
-           (map XXX
-                (paths-rec (- i 1) j k k)))
-          (else
-           (XXX
-            (map XXX
+          ((= j 0)  ; solo spostamenti verticali
+           (list (make-string i #\0))
+           )
+          ((= v 0)  ; spostamenti verso il basso
+           (map (lambda (x) (string-append x "0"))
+                (paths-rec (- i 1) j k k))  ; (i-1+j) --> cerco i+j
+           )
+          (else     ; prima ricorsione con (5 1 2 2)                                  
+           (append
+            (map (lambda (x) (string-append x "0")) ; GIU'
                  (paths-rec (- i 1) j k k))
-            (map XXX
+            (map (lambda (x) (string-append x "1")) ; DX
                  (paths-rec i (- j 1) k (- v 1))))
            )
        )
   ))
           
+
+
+; Prova del 19-01-23
+; Ricorsione ad albero: procedura scs: calcola soprasequenza comune più corta di 2 seq. di caratteri u,v (stringhe)
+; è una variante dell' LCS, siamo però interessati a una sequenza di s più corta possibile, t.c u,v siano sottoseq.
+; ovvero che si possono ottenere da s indipendentemente cancellando alcuni caratteri di s (il risultato in generale
+; *non* è univoco, per cui scs restituisce una delle possibile soprasequenze più corte.
+
+; (scs "arto" "atrio")   --> "atrito"
+; (scs "arco" "ocra")    --> "ocrarco"
+; (scs "archetipo" "")   --> "archetipo"
+; (scs "copia" "copia")  --> "copia"
+
+
+(define scs         ; val: stringa
+  (lambda (u v)     ; u,v: stringhe
+    (cond ((string=? u "")
+            v
+           )
+          ((string=? v "")
+            u
+           )
+          ((char=? (string-ref u 0) (string-ref v 0))
+           (string-append (substring u 0 1)
+                          (scs (substring u 1) (substring v 1))
+                          )
+           )
+          ; "arco" "ocra"
+          (else
+           (let ((x (scs (substring u 1) v))  ; --> x = (scs "a" "ocra") = ...(*)
+                 (y (scs u (substring v 1)))  ; --> y = (scs "arco" "o") = ...(*)
+                 )
+             (if (< (string-length x) (string-length y))
+                 (string-append (substring u 0 1) x)
+                 (string-append (substring v 0 1) y)
+                 )
+             )
+           )
+          )
+    ))
+
+; (*)  : x = (scs "rco" "ocra")
+;        -*-> (scs "co" "ocra")
+;        -*-> (scs "o" "ocra")
+;        = ["o" = "o"]
+;        ==> "o" + (scs "" "cra")
+;        ==> "o" + "cra"
+;        ==> "ocra"
+
+; (**) : y = (scs "arco" "cra")
+;        -*-> (scs "arco" "ra")          ; 'a' ≠ 'c' → ramo y
+;        -*-> (scs "rco" "ra")           ; 'a' ≠ 'r' → ramo x
+;        -*-> (scs "co" "a")             ; 'r' = 'r'
+;        -*-> (scs "o" "a")              ; 'c' ≠ 'a'
+;        -*-> (scs "" "a") = "a"          ; caso base
+;        -*-> (scs "o" "") = "o"          ; caso base
+;        ==> min("a","o") = "o"
+;        ==> "c" + "o" = "co"
+;        ==> "r" + "co" = "rco"
+;        ==> confronto: "rco" (3) < "arco" (4)
+;        ==> "a" + "rco" = "arco"
+;        ==> "c" + "arco" = "carco"
+
+; scs("arco","ocra")
+; │
+; ├─ x = scs("rco","ocra")  → "ocrarco"
+; ├─ y = scs("arco","cra")  → "carco"
+; │
+; └─ confronto
+;    → |x| = 7, |y| = 5
+;    → scelgo y
+;    → aggiungo "o" (primo carattere di v)
+;    → risultato finale: "ocrarco"
+
+
+
+
+
+; Verifica formale della correttezza
+; (f t) --> 3*2^(k-2) + 1  (*)
+
+; procedura:
+(define f    ; val: intero
+  (lambda (b)   ; b: stringa di 0/1 conclusa da 1
+    (cond ((string=? b "1")
+            1)
+          ((char=? (string-ref b 0) #\0)
+            (- (* 2 (f (substring b 1))) 1))
+          (else
+            (+ (* 2 (f (substring b 1))) 1))
+    )
+  )
+)
+
+; Dimostrazione per induzione della correttezza:
+; funzione da dim: (f t) --> 3*2^(k-2) + 1  (*)
+; Caso base (proprietà): 
+
+
+
+
+
+
+
+
+
+; Procedura diffs: data una lista non vuota di interi, restituisce la lista delle differenze fra
+; coppie di elementi conscutivi, nell’ordine.
+; (Se l’argomento è una lista di 1 solo elemento il risultato è la lista vuota.)
+
+; Input esempio procedura: (diffs '(-5 3 7 4 4 5)) → (8 4 -3 0 1)
+
+(define diffs     ; val: lista non vuota
+  (lambda (seq)   ; seq: lista non vuota di interi(R)
+    (if (null? (cdr seq))
+        null
+        (cons (- (cadr seq) (car seq)) (diffs (cdr seq)))
+        )))
+
+; Passaggi ricorsione
+;  --> (cons (- 3 - 5) (diffs '(3 7 4 4 5)))
+;  --> (cons  4        (diffs '(7 4 4 5)))
+;  --> (cons -3        (diffs '(4 4 5)))
+;  --> (cons 0         (diffs '(4 5)))
+;  --> (cons 1         (diffs '(5)))
+;  --> '(5) => caso base => null
+;
+;  risultato: (cons 8 (4 -3 0 1)) --> (8 4 -3 0 1)
+
+
+
+; data una funzione f definita per tutti gli argomenti interi e dato un intero s,
+; restituisce la funzione g tale che g(x) = f(x–s). Per esempio, sulla base della
+; definizione  (define h (shift (lambda(x) (* x x)) 3))  , devono risultare le seguenti valutazioni:
+;  (h 0) → 9 (h 3) → 0 (h 4) → 1 (h 7) → 16
+
+(define shf
+  (lambda (f s)
+    (lambda (x)
+      (f (- x s))
+     )
+  ))
+
+(define h (shf (lambda(x) (* x x)) 3))
 
 
